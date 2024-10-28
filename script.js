@@ -280,7 +280,6 @@ auth.onAuthStateChanged((user) => {
     }
 });
 
-document.getElementById("show-all-jokes-button").addEventListener("click", getAllJokes);
 
 
 // Eventos
