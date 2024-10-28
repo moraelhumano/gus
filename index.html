@@ -55,7 +55,7 @@
 <body class="bg-gray-100 font-sans">
 
     <div class="container mx-auto p-4">
-        <h1 class="text-3xl font-bold text-center mb-6">Generador de Chistes</h1>
+        <h1 class="text-3xl font-bold text-center mb-6">Risapp</h1>
 
         <!-- Contenedor de información del usuario -->
         <div id="user-info" class="text-center mb-4" style="display: none;"></div>
@@ -79,7 +79,7 @@
             </div>
 
             <div class="text-center mb-4">
-                <button id="start-button" class="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600">
+                <button id="start-button" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-orange-600">
                     Iniciar
                 </button>
             </div>
@@ -103,8 +103,17 @@
         </div>
 
         <div id="joke-container" class="bg-white p-4 rounded shadow"></div>
+
     </div>
 
+<!-- Botón para mostrar chistes de otros usuarios -->
+<button id="show-all-jokes-button" class="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600">
+    Ver Chistes de Otros Usuarios
+</button>
+
+
     <script type="module" src="script.js"></script>
+    <script type="module" src="vote.js"></script>
+    
 </body>
 </html>

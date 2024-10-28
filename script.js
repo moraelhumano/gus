@@ -2,6 +2,8 @@
 import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-auth.js";
 import { getFirestore, collection, getDocs, addDoc, query, where } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-firestore.js";
 
+
+
 // Elementos del DOM
 const jokeContainer = document.getElementById("joke-container");
 const jokeInput = document.getElementById("joke-input");
@@ -111,28 +113,34 @@ async function getJokes() {
     }
 }
 
-// Función para agregar un chiste a Firestore
-async function saveJoke() {
-    const joke = jokeInput.value;
-    if (!joke) return;
+// Función para agregar un chiste a Firestore, incluyendo el nombre del usuario
 
+
+async function getAllJokes() {
     try {
-        await addDoc(collection(db, "jokes"), {
-            userId: currentUser.uid, // Guardar el UID del usuario
-            topic: currentJokeTheme,
-            content: joke,
-            points: 2 // Puntos por el chiste
+        const querySnapshot = await getDocs(collection(db, "jokes"));
+        allJokesList.innerHTML = ""; // Limpiar la lista de chistes
+
+        querySnapshot.forEach((doc) => {
+            const jokeData = doc.data();
+            const jokeDate = new Date(jokeData.timestamp.toDate()); // Convertir timestamp a Date
+            const formattedDate = jokeDate.toLocaleString(); // Formato legible
+
+            if (jokeData.content && jokeData.userName) {
+                allJokesList.innerHTML += `
+                    <div class="mb-4 border p-2 rounded">
+                        <p class="font-bold">${jokeData.userName}</p>
+                        <p>Tema: ${jokeData.topic}</p>
+                        <p>Chiste: ${jokeData.content}</p>
+                        <p class="text-gray-500 text-sm">${formattedDate}</p>
+                    </div>
+                `;
+            }
         });
-        points += 2; // Sumar puntos
-        currentJokeTheme = ''; // Limpiar el tema actual
-        document.getElementById("current-theme").innerText = "Tema actual: "; // Actualizar el texto en el DOM
-        jokeInput.value = ""; // Limpiar el input
-        getJokes(); // Obtener chistes nuevamente
-        updatePointsDisplay();
-        resetTimer(); // Reiniciar el temporizador
-        displayMessage("¡Chiste enviado!");
+
+        allJokesContainer.style.display = "block"; // Mostrar el contenedor
     } catch (error) {
-        console.error("Error al guardar el chiste:", error);
+        console.error("Error al obtener los chistes de otros usuarios:", error);
     }
 }
 
@@ -175,21 +183,61 @@ function getTotalTime() {
 let isGameOver = false; // Variable de control para verificar si el juego ha terminado
 
 // Función para iniciar el temporizador
+async function saveJoke() {
+    const joke = jokeInput.value;
+    if (!joke || !currentUser) return;
+
+    try {
+        const userName = currentUser.displayName || "Usuario desconocido";
+        
+        await addDoc(collection(db, "jokes"), {
+            userId: currentUser.uid,
+            userName: userName,
+            topic: currentJokeTheme,
+            content: joke,
+            points: 2,
+            timestamp: new Date(),
+            ratings: []
+        });
+        
+        points += 2;
+        currentJokeTheme = '';
+        document.getElementById("current-theme").innerText = "Tema actual: ";
+        jokeInput.value = ""; 
+        updatePointsDisplay();
+        
+        isGameOver = true; // Termina el juego al enviar el chiste
+        resetTimer(); // Detén el temporizador
+        displayMessage("¡Chiste enviado!");
+        
+        // Llama a getJokes() para refrescar la lista de chistes
+        await getJokes();
+    } catch (error) {
+        console.error("Error al guardar el chiste:", error);
+    }
+}
+
+
 function startTimer() {
-    timerBar.style.width = "100%"; // Resetea la barra
-    isGameOver = false; // Reinicia el estado del juego al iniciar el temporizador
+    timerBar.style.width = "100%";
+    isGameOver = false;
     timer = setInterval(() => {
+        if (isGameOver) {  // Detener el temporizador si el juego terminó
+            clearInterval(timer);
+            return;
+        }
+
         totalTime--;
         const percentage = (totalTime / getTotalTime()) * 100;
         timerBar.style.width = `${percentage}%`;
-        
+
         if (totalTime <= 0) {
             clearInterval(timer);
-            if (!isGameOver) { // Solo sumar puntos si el juego no ha terminado aún
+            if (!isGameOver) {
                 displayMessage("Se acabó el tiempo! Has obtenido 1 punto.");
-                points += 1; // Sumar un punto por tiempo agotado
+                points += 1;
                 updatePointsDisplay();
-                isGameOver = true; // Marca el juego como terminado
+                isGameOver = true;
             }
             resetTimer();
         }
@@ -228,6 +276,9 @@ auth.onAuthStateChanged((user) => {
         document.getElementById("current-theme").innerText = "Tema actual: "; // Limpiar el tema en el DOM
     }
 });
+
+document.getElementById("show-all-jokes-button").addEventListener("click", getAllJokes);
+
 
 // Eventos
 loginButton.addEventListener("click", loginWithGoogle);
