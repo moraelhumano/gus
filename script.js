@@ -49,11 +49,14 @@ function displayUserInfo() {
         const userInfo = document.createElement("div");
         userInfo.id = "user-info"; // Añade un ID para poder identificarlo
         userInfo.innerHTML = `
-            <p>Bienvenido, ${currentUser.displayName}!</p>
-            <img src="${currentUser.photoURL}" alt="Foto de perfil" />
-            <button id="logout-button">Cerrar sesión</button>
+            <p class="text-lg">Bienvenido, ${currentUser.displayName}!</p>
+            <img src="${currentUser.photoURL}" alt="Foto de perfil" class="w-16 h-16 rounded-full mx-auto mb-2" />
+            <button id="logout-button" class="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600">Cerrar sesión</button>
         `;
-        document.body.appendChild(userInfo);
+
+        // Inserta el contenedor de usuario antes del contenedor de inicio de sesión
+        const loginContainer = document.getElementById("login-container");
+        loginContainer.insertAdjacentElement('beforebegin', userInfo); // Inserta antes del contenedor de inicio de sesión
 
         // Agregar evento de cierre de sesión
         document.getElementById("logout-button").addEventListener("click", async () => {
