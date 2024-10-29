@@ -18,3 +18,25 @@ body {
     background-color: green; /* Color inicial */
     transition: width 1s linear; /* Animación suave */
 }
+
+
+.jokes-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.jokes-table th, .jokes-table td {
+    border: 1px solid #000;
+    padding: 8px;
+}
+
+.jokes-table th, .jokes-table tr {
+    border: 1px solid #000;
+    padding: 8px;
+}
+
+.jokes-table th {
+    background-color: #f2f2f2;
+    text-align: left;
+}

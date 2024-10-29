@@ -130,11 +130,12 @@ function displayUserInfo() {
 
     if (currentUser) {
         const userInfo = document.createElement("div");
+        userInfo.classList.add("flex", "justify-around");
         userInfo.id = "user-info"; // Añade un ID para poder identificarlo
         userInfo.innerHTML = `
-            <p class="text-lg">Bienvenido, ${currentUser.displayName}!</p>
-            <img src="${currentUser.photoURL}" alt="Foto de perfil" class="w-16 h-16 rounded-full mx-auto mb-2" />
             <button id="logout-button" class="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600">Cerrar sesión</button>
+            <p class="text-lg">Bienvenido, ${currentUser.displayName}!</p>
+            <img src="${currentUser.photoURL}" alt="Foto de perfil" class="w-16 h-16 rounded-full  mb-2" />
         `;
 
         // Inserta el contenedor de usuario antes del contenedor de inicio de sesión
@@ -172,6 +173,7 @@ async function loginWithGoogle() {
 }
 
 // Función para obtener los chistes de Firestore
+// Función para obtener los chistes de Firestore
 async function getJokes() {
     try {
         const q = query(collection(db, "jokes"), where("userId", "==", currentUser.uid)); // Filtrar por userId
@@ -180,24 +182,62 @@ async function getJokes() {
         jokeContainer.innerHTML = ""; // Limpia el contenedor de chistes
         let totalPoints = 0; // Inicializa los puntos totales
 
+        // Crear el elemento tabla y los encabezados
+        const table = document.createElement("table");
+        table.classList.add("jokes-table"); // Añadir una clase para estilizar la tabla si lo deseas
+        
+        const headerRow = document.createElement("tr");
+        const headers = ["Tema", "Chiste", "Puntos"];
+        
+        headers.forEach(headerText => {
+            const header = document.createElement("th");
+            header.textContent = headerText;
+            headerRow.appendChild(header);
+        });
+        
+        table.appendChild(headerRow);
+
+        // Crear una fila para cada chiste
         querySnapshot.forEach((doc) => {
             const jokeData = doc.data();
             console.log(jokeData); // Verificar qué datos estás recibiendo
-            // Acceder a las propiedades correctas
+
             if (jokeData.topic && jokeData.content) {
-                jokeContainer.innerHTML += `Tema: ${jokeData.topic} - Chiste: ${jokeData.content} - Puntos: ${jokeData.points}<br>`;
-                totalPoints += jokeData.points; // Sumar puntos de cada chiste
+                const row = document.createElement("tr");
+
+                // Crear celdas para cada dato
+                const topicCell = document.createElement("td");
+                topicCell.textContent = jokeData.topic;
+                
+                const contentCell = document.createElement("td");
+                contentCell.textContent = jokeData.content;
+                
+                const pointsCell = document.createElement("td");
+                pointsCell.textContent = jokeData.points;
+
+                // Añadir las celdas a la fila
+                row.appendChild(topicCell);
+                row.appendChild(contentCell);
+                row.appendChild(pointsCell);
+
+                // Añadir la fila a la tabla
+                table.appendChild(row);
+
+                // Sumar los puntos del chiste actual
+                totalPoints += jokeData.points;
             } else {
                 console.warn(`El documento ${doc.id} no contiene el tema o el chiste.`);
             }
         });
         
+        jokeContainer.appendChild(table); // Agregar la tabla al contenedor de chistes
         points = totalPoints; // Actualiza la variable de puntos acumulados
         updatePointsDisplay(); // Actualiza la visualización de puntos
     } catch (error) {
         console.error("Error al obtener los chistes:", error);
     }
 }
+
 
 // Función para agregar un chiste a Firestore, incluyendo el nombre del usuario
 
