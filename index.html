@@ -4,114 +4,103 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>G.U.S</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-app.js";
-        import { getAuth } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-auth.js";
-        import { getFirestore } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyDgFJNyUL2AxT6YatY84E1udDkMSz9DGGs",
-            authDomain: "risapp-37bd9.firebaseapp.com",
-            projectId: "risapp-37bd9",
-            storageBucket: "risapp-37bd9.appspot.com",
-            messagingSenderId: "909578481013",
-            appId: "1:909578481013:web:541567a62b2c71f019773c",
-            measurementId: "G-46EQJBZQ3T"
-        };
-
-        // Inicializar Firebase
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        // Exportar auth y db para su uso en script.js
-        window.auth = auth;
-        window.db = db;
-
-        // Función para mostrar la información del usuario
-        function displayUserInfo() {
-            const userInfoContainer = document.getElementById("user-info");
-            if (window.currentUser) {
-                userInfoContainer.innerHTML = `
-                    <p class="text-lg">Bienvenido, ${window.currentUser.displayName}!</p>
-                    <img src="${window.currentUser.photoURL}" alt="Foto de perfil" class="w-16 h-16 rounded-full mx-auto mb-2" />
-                    <button id="logout-button" class="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600">Cerrar sesión</button>
-                `;
-                userInfoContainer.style.display = "block";
-
-                // Agregar evento de cierre de sesión
-                document.getElementById("logout-button").addEventListener("click", async () => {
-                    await auth.signOut();
-                    userInfoContainer.style.display = "none"; // Ocultar información del usuario
-                });
-            } else {
-                userInfoContainer.style.display = "none"; // Ocultar si no hay usuario
-            }
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
         }
 
-    </script>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: #f3f4f6;
+            color: #333;
+            overflow: hidden;
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        .container {
+            text-align: center;
+            max-width: 600px;
+            padding: 20px;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 1rem;
+            animation: slideDown 0.7s ease-out;
+        }
+
+        p {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            color: #4b5563;
+            animation: fadeInText 1.2s ease-out;
+            margin-bottom: 2rem;
+        }
+
+        /* Botón */
+        .game-button {
+            display: inline-block;
+            padding: 12px 24px;
+            font-size: 1rem;
+            color: #fff;
+            background-color: #1f2937;
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            animation: fadeInButton 1.5s ease-out;
+        }
+
+        .game-button:hover {
+            background-color: #4b5563;
+        }
+
+        /* Animaciones */
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        @keyframes slideDown {
+            0% { transform: translateY(-30px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes fadeInText {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInButton {
+            0% { opacity: 0; transform: translateY(10px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+    </style>
 </head>
-<body class="bg-gray-100 font-sans">
+<body>
 
-        <!-- Contenedor de inicio de sesión -->
-        <div id="login-container" class="text-center mb-4">
-            <button id="login-button" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-                Iniciar Sesión con Google
-            </button>
-        </div>
-
-    <div class="container mx-auto p-4">
-
-        <h1 class="text-3xl font-bold text-center mb-6">G.U.S</h1>
-        <div id="timer" class="mb-4">
-            <div id="timer-bar" class="bg-green-500 h-6 rounded" style="width: 100%;"></div>
-        </div>
-        <div id="points-display" class="text-lg text-center mb-4">Puntos Totales: 0</div>
-
-
-
-        <!-- Contenedor del juego -->
-        <div id="game-container" style="display: none;">
-            <div class="mb-4 text-center">
-                <label for="difficulty-select" class="mr-2">Selecciona la dificultad:</label>
-                <select id="difficulty-select" class="border rounded p-2">
-                    <option value="easy">Leyenda...s Legendarias (1:30 minutos)</option>
-                    <option value="medium">Cotorrisa (1 minuto)</option>
-                    <option value="hard">Mesa de la Logia (30 segundos)</option>
-                </select>
-            </div>
-
-            <div class="text-center mb-4">
-                <button id="start-button" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-orange-600">
-                    Iniciar
-                </button>
-            </div>
-            <div id="current-theme" class="text-lg text-center mb-4">Tema actual: </div>
-
-            <div class="mb-4">
-                <input type="text" id="joke-input" placeholder="Escribe tu chiste aquí" class="border rounded p-2 w-full">
-            </div>
-            <div class="text-center mb-4">
-                <button id="submit-joke-button" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
-                    Enviar Chiste
-                </button>
-            </div>
-        </div>
-
-        <div id="joke-container" class="bg-white p-4 rounded shadow"></div>
-
+    <div class="container">
+        <h1>G.U.S</h1>
+        <p>Soy el asistente que te ayudará a mejorar tus prácticas y habilidades en la escritura de tus nuevos chistes.</p>
+        <a href="game.html" class="game-button">Ir al Juego</a>
     </div>
 
+    <!-- Agrega este botón en tu HTML de inicio (index.html) -->
+<script src="script.js"></script>
+<script src="words.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
 
-    <button id="view-all-jokes-button">Ver todos los chistes</button>
-    <div id="all-jokes-container" style="display: none;">
-        <div id="all-jokes-list"></div>
-    </div>
-    
-
-    <script type="module" src="script.js"></script>
-    <script type="module" src="vote.js"></script>
-    
 </body>
 </html>

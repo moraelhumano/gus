@@ -1,6 +1,7 @@
 // script.js
 import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-auth.js";
 import { getFirestore, collection, getDocs, addDoc, query, where } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-firestore.js";
+import { themes } from  "/words.js";
 
 
 
@@ -24,100 +25,7 @@ let totalTime;
 
 // Arreglo de temas
 // Arreglo de temas y palabras
-const themes = [
-    // Situaciones
-    "probar una nueva receta",
-    "tener una mascota",
-    "presentación en público",
-    "estar atrapado en el tráfico",
-    "día de playa",
-    "tener una entrevista de trabajo",
-    "saludar a alguien que no recuerdas",
-    "viaje en avión",
-    "despertarse tarde",
-    "reunión de exalumnos",
-    "pedir una pizza",
-    "celebrar una fiesta sorpresa",
-    "perder las llaves",
-    "primer día de clases",
-    "cita romántica",
-    "pagar impuestos",
-    "ir de campamento",
-    "conocer a los suegros",
-    "salir de compras en Black Friday",
-    "ir al dentista",
-    "festejar un cumpleaños infantil",
-    "mudanza a una nueva ciudad",
-    "encontrarse con una celebridad",
-    "hacer una llamada accidental",
-    "responder una pregunta difícil",
-    "comprar ropa en rebaja",
-    "usar tecnología nueva",
-    "tener una entrevista de televisión",
-    "resolver un acertijo complicado",
-    "probar comida exótica",
-    "tener un mal corte de cabello",
-    "tomar el autobús equivocado",
-    "darse cuenta que olvidaste tu cartera",
-    "escuchar tu canción favorita en la radio",
-    "preparar una sorpresa para un amigo",
-    "dar un discurso en una boda",
-    "entregar un proyecto en el trabajo",
-    "llegar tarde a una boda",
-    "tener que improvisar un discurso",
-    "ver una película de terror solo",
-    "sobrevivir una despedida de soltero/a",
-    "perderse en un museo",
-    "confundir el nombre de alguien",
-    "hacer ejercicio en el gimnasio",
-    "participar en una competencia de talento",
-    "estar en una cena familiar incómoda",
-    "planear unas vacaciones soñadas",
 
-    // Palabras comunes
-    "zapato",
-    "camiones",
-    "bicicleta",
-    "reloj",
-    "espejo",
-    "computadora",
-    "montaña",
-    "guitarra",
-    "sandwich",
-    "teléfono",
-    "muñeca",
-    "pintura",
-    "cámara",
-    "árbol",
-    "avión",
-    "sombrero",
-    "silla",
-    "lámpara",
-    "café",
-    "llave",
-    "libro",
-    "pasta de dientes",
-    "mochila",
-    "vaso",
-    "pluma",
-    "cojín",
-    "cartera",
-    "música",
-    "cuchara",
-    "baile",
-    "parque",
-    "amigo",
-    "pelota",
-    "ventana",
-    "sol",
-    "estrella",
-    "animal",
-    "carro",
-    "tren",
-    "bicicleta",
-    "flor",
-    "mesa"
-];
 
 
 // Función para mostrar la información del usuario
@@ -130,12 +38,12 @@ function displayUserInfo() {
 
     if (currentUser) {
         const userInfo = document.createElement("div");
-        userInfo.classList.add("flex", "justify-around");
+        userInfo.classList.add("flex", "justify-around" , "items-center", "font-semibold");
         userInfo.id = "user-info"; // Añade un ID para poder identificarlo
         userInfo.innerHTML = `
-            <button id="logout-button" class="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600">Cerrar sesión</button>
-            <p class="text-lg">Bienvenido, ${currentUser.displayName}!</p>
             <img src="${currentUser.photoURL}" alt="Foto de perfil" class="w-16 h-16 rounded-full  mb-2" />
+            <p class="text-lg">Bienvenido a G.U.S, ${currentUser.displayName}!</p>
+            <button id="logout-button" class="h-10 bg-red-500 text-white px-4 py-1 rounded hover:bg-cyan-500">Cerrar sesión</button>
         `;
 
         // Inserta el contenedor de usuario antes del contenedor de inicio de sesión
@@ -163,10 +71,8 @@ async function loginWithGoogle() {
     try {
         const result = await signInWithPopup(auth, provider);
         currentUser = result.user;
-        loginContainer.style.display = "none"; // Ocultar el botón de inicio de sesión
-        gameContainer.style.display = "block"; // Mostrar contenedor del juego
-        getJokes(); // Carga los chistes después de iniciar sesión
-        displayUserInfo(); // Mostrar información del usuario
+        // Redirige a game.html
+        window.location.href = "game.html"; // Cambia el enlace si es necesario
     } catch (error) {
         console.error("Error al iniciar sesión con Google:", error);
     }
@@ -187,10 +93,11 @@ async function getJokes() {
         table.classList.add("jokes-table"); // Añadir una clase para estilizar la tabla si lo deseas
         
         const headerRow = document.createElement("tr");
-        const headers = ["Tema", "Chiste", "Puntos"];
+        const headers = ["Tema", "Chiste"];
         
         headers.forEach(headerText => {
             const header = document.createElement("th");
+            header.classList.add("border-bottom");
             header.textContent = headerText;
             headerRow.appendChild(header);
         });
@@ -212,13 +119,10 @@ async function getJokes() {
                 const contentCell = document.createElement("td");
                 contentCell.textContent = jokeData.content;
                 
-                const pointsCell = document.createElement("td");
-                pointsCell.textContent = jokeData.points;
 
                 // Añadir las celdas a la fila
                 row.appendChild(topicCell);
                 row.appendChild(contentCell);
-                row.appendChild(pointsCell);
 
                 // Añadir la fila a la tabla
                 table.appendChild(row);
