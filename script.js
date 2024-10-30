@@ -43,7 +43,7 @@ function displayUserInfo() {
         userInfo.innerHTML = `
             <img src="${currentUser.photoURL}" alt="Foto de perfil" class="w-16 h-16 rounded-full  mb-2" />
             <p class="text-lg">Bienvenido a G.U.S, ${currentUser.displayName}!</p>
-            <button id="logout-button" class="h-10 bg-red-500 text-white px-4 py-1 rounded hover:bg-cyan-500">Cerrar sesión</button>
+            <button id="logout-button" class="h-auto bg-red-500 text-white px-4 py-1 rounded hover:bg-cyan-500">Cerrar sesión</button>
         `;
 
         // Inserta el contenedor de usuario antes del contenedor de inicio de sesión
