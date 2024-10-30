@@ -1,4 +1,4 @@
-export const wordsArray = [
+export const themes = [
     "conocer a tus suegros", "aprender a manejar", "ir al supermercado", "primera cita", 
     "trabajo en equipo", "dormir en casa ajena", "corte de pelo desastroso", "reunión familiar", 
     "perder el autobús", "presentación en público", "olvidar una contraseña", "día de mudanza", 
