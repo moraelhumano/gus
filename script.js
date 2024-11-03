@@ -1,7 +1,8 @@
 // script.js
-import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-auth.js";
-import { getFirestore, collection, getDocs, addDoc, query, where } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-firestore.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, deleteUser } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-auth.js";
+import { getFirestore, collection, getDocs, addDoc, query, where, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-firestore.js";
 import { themes } from  "/words.js";
+
 
 
 
@@ -16,6 +17,7 @@ const gameContainer = document.getElementById("game-container");
 const loginContainer = document.getElementById("login-container");
 const timerBar = document.getElementById("timer-bar");
 const difficultySelect = document.getElementById("difficulty-select");
+
 
 let currentUser = null;
 let points = 0;
@@ -84,75 +86,89 @@ async function loginWithGoogle() {
 }
 
 
+
 async function getJokes() {
     try {
-        const q = query(collection(db, "jokes"), where("userId", "==", currentUser.uid)); // Filtrar por userId
+        const q = query(collection(db, "jokes"), where("userId", "==", currentUser.uid));
         const querySnapshot = await getDocs(q);
         
         jokeContainer.innerHTML = ""; // Limpia el contenedor de chistes
-        let totalPoints = 0; // Inicializa los puntos totales
-
-        // Calcular los puntos totales
-        querySnapshot.forEach((doc) => {
-            const jokeData = doc.data();
-            totalPoints += jokeData.points || 0; // Asegúrate de que cada chiste tenga un valor de puntos
-        });
-
-        // Crear y agregar el elemento de visualización de puntos totales
-        const pointsElement = document.createElement("div");
-        pointsElement.classList.add("text-xl", "font-bold", "mb-4", "text-gray-700");
-        pointsElement.innerText = `Puntos Totales: ${totalPoints}`;
-        jokeContainer.appendChild(pointsElement); // Agregar el elemento de puntos antes de la tabla
+        let totalPoints = 0;
 
         // Crear el elemento tabla y los encabezados
         const table = document.createElement("table");
-        table.classList.add("jokes-table"); // Añadir una clase para estilizar la tabla si lo deseas
-        
+        table.classList.add("jokes-table");
+
         const headerRow = document.createElement("tr");
-        const headers = ["Tema", "Chiste"];
-        
+        const headers = ["Tema", "Chiste", "Acciones"]; // Añadir encabezado de acciones
+
         headers.forEach(headerText => {
             const header = document.createElement("th");
             header.classList.add("border-bottom");
             header.textContent = headerText;
             headerRow.appendChild(header);
         });
-        
+
         table.appendChild(headerRow);
 
         // Crear una fila para cada chiste
         querySnapshot.forEach((doc) => {
             const jokeData = doc.data();
-            console.log(jokeData); // Verificar qué datos estás recibiendo
 
             if (jokeData.topic && jokeData.content) {
                 const row = document.createElement("tr");
 
-                // Crear celdas para cada dato
                 const topicCell = document.createElement("td");
                 topicCell.textContent = jokeData.topic;
-                
+
                 const contentCell = document.createElement("td");
                 contentCell.textContent = jokeData.content;
-                
-                // Añadir las celdas a la fila
+
+                // Crear la celda de acción con el botón de eliminar
+                const actionCell = document.createElement("td");
+                const deleteButton = document.createElement("button");
+                deleteButton.textContent = "Eliminar";
+                deleteButton.classList.add("bg-red-500", "text-white", "px-4", "py-2", "rounded", "hover:bg-red-600");
+
+                // Agregar el evento de eliminación
+                deleteButton.addEventListener("click", async () => {
+                    const confirmation = confirm("¿Estás seguro de que deseas eliminar este chiste?");
+                    if (confirmation) {
+                        await deleteJoke(doc.id);
+                        await getJokes();
+                    }
+                });
+
+                actionCell.appendChild(deleteButton);
                 row.appendChild(topicCell);
                 row.appendChild(contentCell);
+                row.appendChild(actionCell); // Agregar celda de acción
 
-                // Añadir la fila a la tabla
                 table.appendChild(row);
             } else {
                 console.warn(`El documento ${doc.id} no contiene el tema o el chiste.`);
             }
         });
-        
-        jokeContainer.appendChild(table); // Agregar la tabla al contenedor de chistes
-        points = totalPoints; // Actualiza la variable de puntos acumulados
-        updatePointsDisplay(); // Actualiza la visualización de puntos
+
+        jokeContainer.appendChild(table);
+        points = totalPoints;
+        updatePointsDisplay();
     } catch (error) {
         console.error("Error al obtener los chistes:", error);
     }
 }
+
+// Función para eliminar un chiste
+async function deleteJoke(jokeId) {
+    try {
+        await deleteDoc(doc(db, "jokes", jokeId)); // Eliminar el documento del chiste por su ID
+        displayMessage("¡Chiste eliminado con éxito!");
+    } catch (error) {
+        console.error("Error al eliminar el chiste:", error);
+        displayMessage("Error al eliminar el chiste.");
+    }
+}
+
 
 // Función para actualizar la visualización de puntos
 function updatePointsDisplay() {

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Chistes - G.U.S</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 font-sans">
+    <div class="container mx-auto">
+        <h1 class="text-2xl text-center font-bold my-4">Mis Chistes</h1>
+        <div id="jokes-container" class="bg-white p-4 rounded shadow"></div>
+    </div>
+
+    <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-auth.js"; // Asegúrate de importar `onAuthStateChanged`
+import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-firestore.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyDgFJNyUL2AxT6YatY84E1udDkMSz9DGGs",
+    authDomain: "risapp-37bd9.firebaseapp.com",
+    projectId: "risapp-37bd9",
+    storageBucket: "risapp-37bd9.appspot.com",
+    messagingSenderId: "909578481013",
+    appId: "1:909578481013:web:541567a62b2c71f019773c",
+    measurementId: "G-46EQJBZQ3T"
+};
+
+// Inicializar Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app); // Obtener la instancia de autenticación
+
+// Obtén el ID del usuario actual
+onAuthStateChanged(auth, user => {
+  if (user) {
+    const userId = user.uid; // ID del usuario actual
+
+    // Accede a la colección de chistes y filtra por userId
+    const q = query(collection(db, "jokes"), where("userId", "==", userId)); // Filtra los chistes por el ID del usuario
+    getDocs(q)
+      .then(snapshot => {
+        snapshot.forEach(doc => {
+          const jokeData = doc.data();
+          // Aquí agrega el chiste a tu interfaz
+          const jokesContainer = document.getElementById("jokes-container");
+          const jokeDiv = document.createElement("div");
+          jokeDiv.classList.add("p-2", "border-b");
+
+          jokeDiv.innerHTML = `
+              <strong>${jokeData.userName} (${jokeData.topic}):</strong>
+              <p>${jokeData.content}</p>
+          `;
+
+          jokesContainer.appendChild(jokeDiv);
+        });
+      })
+      .catch(error => {
+        console.error("Error al obtener los chistes: ", error);
+      });
+  } else {
+    // No hay usuario autenticado, redirigir o mostrar mensaje
+    console.log("No hay usuario autenticado");
+  }
+});
+
+
+
+        async function loadJokes() {
+            const jokesContainer = document.getElementById("jokes-container");
+            jokesContainer.innerHTML = ""; // Limpiar el contenedor
+
+            const q = query(collection(db, "jokes")); // Obtener todos los chistes
+            const querySnapshot = await getDocs(q);
+
+            querySnapshot.forEach((doc) => {
+                const jokeData = doc.data();
+                const jokeDiv = document.createElement("div");
+                jokeDiv.classList.add("p-2", "border-b");
+
+                jokeDiv.innerHTML = `
+                    <strong>${jokeData.userName} (${jokeData.topic}):</strong>
+                    <p>${jokeData.content}</p>
+                `;
+
+                jokesContainer.appendChild(jokeDiv);
+            });
+        }
+
+        loadJokes(); // Cargar los chistes al iniciar la página
+
+        
+    </script>
+</body>
+</html>
