@@ -29,22 +29,45 @@ let totalTime;
 
 
 // Función para mostrar la información del usuario
+// Función para mostrar la información del usuario
 function displayUserInfo() {
-    const bottomMenu = document.getElementById("bottom-menu");
-    
+    // Elimina la información de usuario existente si ya hay una
+    const existingUserInfo = document.getElementById("user-info");
+    if (existingUserInfo) {
+        existingUserInfo.remove();
+    }
+
     if (currentUser) {
-        // Actualiza la imagen del usuario en el menú inferior
+        const userInfo = document.createElement("div");
+        userInfo.classList.add("flex", "justify-around" , "items-center", "font-semibold", "bg-red-nintendo" , "py-4");
+        userInfo.id = "user-info"; // Añade un ID para poder identificarlo
+        userInfo.innerHTML = `
+            <img src="gus-logo.png" alt="Foto de perfil" class=" h-10" />
+            <button id="logout-button" class="bg-red-600 text-white font-bold py-1 px-4 rounded-full flex items-center justify-center border-4 border-white shadow-md">Salir</button>
+        `;
+
+        // Inserta el contenedor de usuario antes del contenedor de inicio de sesión
+        const loginContainer = document.getElementById("login-container");
+        loginContainer.insertAdjacentElement('beforebegin', userInfo); // Inserta antes del contenedor de inicio de sesión
+
+        // Actualiza la imagen del usuario en el menú
         const userAvatar = document.getElementById("user-avatar");
         userAvatar.src = currentUser.photoURL;
 
-        // Muestra el nombre del usuario debajo de la foto
-        const userDisplayName = document.getElementById("user-display-name");
-        userDisplayName.innerText = currentUser.displayName || "Usuario desconocido";
-
-        // Resto de tu código para manejar el cierre de sesión...
+        // Agregar evento de cierre de sesión
+        document.getElementById("logout-button").addEventListener("click", async () => {
+            await auth.signOut();
+            userInfo.remove();
+            gameContainer.style.display = "none"; // Ocultar contenedor del juego
+            loginContainer.style.display = "block"; // Mostrar botón de inicio de sesión
+            points = 0; // Reinicia los puntos
+            updatePointsDisplay();
+            jokeContainer.innerHTML = ""; // Limpiar chistes al cerrar sesión
+            currentJokeTheme = ''; // Limpiar el tema actual
+            document.getElementById("current-theme").innerText = "Tema actual: "; // Limpiar el tema en el DOM
+        });
     }
 }
-
 
 
 // Función para iniciar sesión con Google
