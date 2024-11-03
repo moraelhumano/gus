@@ -38,12 +38,12 @@ function displayUserInfo() {
     }
 
     if (currentUser) {
-        // const userInfo = document.createElement("div");
-        // userInfo.classList.add("flex", "justify-around" , "items-center", "font-semibold", "bg-red-nintendo" , "py-4");
-        // userInfo.id = "user-info"; // Añade un ID para poder identificarlo
-        // userInfo.innerHTML = `
-        //     <img src="gus-logo.png" alt="Foto de perfil" class=" h-10" />
-        // `;
+        const userInfo = document.createElement("div");
+         userInfo.classList.add("hidden");
+         userInfo.id = "user-info"; 
+         userInfo.innerHTML = `
+             <img src="gus-logo.png" alt="Foto de perfil" class=" h-10" />
+         `;
 
         // Inserta el contenedor de usuario antes del contenedor de inicio de sesión
         const loginContainer = document.getElementById("login-container");
@@ -169,32 +169,16 @@ async function getJokes() {
 
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/service-worker.js').then(registration => {
-            console.log('Service Worker registrado con éxito:', registration);
-        }).catch(error => {
-            console.log('Error al registrar el Service Worker:', error);
-        });
+        navigator.serviceWorker.register('/service-worker.js')
+            .then(registration => {
+                console.log('Service Worker registrado con éxito:', registration);
+            })
+            .catch(error => {
+                console.error('Error al registrar el Service Worker:', error);
+            });
     });
 }
 
-
-let deferredPrompt;
-
-window.addEventListener('beforeinstallprompt', (e) => {
-    // Prevenir que el mini cuadro de diálogo se muestre automáticamente
-    e.preventDefault();
-    // Guardar el evento para que podamos mostrarlo más tarde
-    deferredPrompt = e;
-    // Mostrar un botón o interfaz para que el usuario pueda instalar la app
-    showInstallButton(); // Función para mostrar el botón de instalación
-});
-
-
-window.addEventListener('appinstalled', () => {
-    console.log('La aplicación ha sido instalada.');
-    const installButton = document.getElementById('install-button');
-    installButton.style.display = 'none'; // Ocultar el botón después de la instalación
-});
 
 
 // Crear un contenedor para el selector de dificultad y el botón
@@ -382,24 +366,67 @@ function getRandomTheme() {
 // Verificar el estado de autenticación al cargar la aplicación
 const auth = getAuth();
 const db = getFirestore();
+
 auth.onAuthStateChanged((user) => {
     if (user) {
         currentUser = user;
-        loginContainer.style.display = "none"; // Ocultar el botón de inicio de sesión
-        gameContainer.style.display = "block"; // Mostrar contenedor del juego
-        getJokes(); // Cargar chistes
-        displayUserInfo(); // Mostrar información del usuario
+
+        // Ocultar el botón de inicio de sesión y mostrar el contenedor del juego
+        loginContainer.style.display = "none";
+        gameContainer.style.display = "block";
+
+        // Cargar chistes
+        getJokes();
+
+        // Mostrar información del usuario
+        const userInfo = {
+            name: user.displayName,
+            photoURL: user.photoURL,
+            // Agrega cualquier otro campo que necesites
+        };
+        displayUserInfo(userInfo);
+
     } else {
+        // Resetear variables y UI al cerrar sesión
         currentUser = null;
-        loginContainer.style.display = "block"; // Mostrar botón de inicio de sesión
-        gameContainer.style.display = "none"; // Ocultar contenedor del juego
-        jokeContainer.innerHTML = ""; // Limpiar los chistes al cerrar sesión
+        loginContainer.style.display = "block";
+        gameContainer.style.display = "none";
+        jokeContainer.innerHTML = ""; // Limpiar los chistes
         points = 0; // Reiniciar los puntos
-        updatePointsDisplay(); // Actualizar la visualización de puntos
+        updatePointsDisplay();
         document.getElementById("current-theme").innerText = "Por 2 puntos escribe sobre: "; // Limpiar el tema en el DOM
+        console.log("Usuario no autenticado.");
     }
 });
 
+
+let deferredPrompt;
+
+window.addEventListener("beforeinstallprompt", (e) => {
+    // Previene que el banner de instalación aparezca de inmediato
+    e.preventDefault();
+    deferredPrompt = e;
+    
+    // Muestra un botón o alguna indicación de que la app es instalable
+    const installButton = document.getElementById("installButton");
+    installButton.style.display = "block";
+
+    // Manejar el clic en el botón para mostrar el prompt de instalación
+    installButton.addEventListener("click", () => {
+        installButton.style.display = "none";
+        deferredPrompt.prompt();
+        
+        // Espera la respuesta del usuario
+        deferredPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === "accepted") {
+                console.log("Usuario aceptó la instalación");
+            } else {
+                console.log("Usuario rechazó la instalación");
+            }
+            deferredPrompt = null;
+        });
+    });
+});
 
 
 
