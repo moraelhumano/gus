@@ -167,7 +167,34 @@ async function getJokes() {
 
 
 
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js').then(registration => {
+            console.log('Service Worker registrado con éxito:', registration);
+        }).catch(error => {
+            console.log('Error al registrar el Service Worker:', error);
+        });
+    });
+}
 
+
+let deferredPrompt;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    // Prevenir que el mini cuadro de diálogo se muestre automáticamente
+    e.preventDefault();
+    // Guardar el evento para que podamos mostrarlo más tarde
+    deferredPrompt = e;
+    // Mostrar un botón o interfaz para que el usuario pueda instalar la app
+    showInstallButton(); // Función para mostrar el botón de instalación
+});
+
+
+window.addEventListener('appinstalled', () => {
+    console.log('La aplicación ha sido instalada.');
+    const installButton = document.getElementById('install-button');
+    installButton.style.display = 'none'; // Ocultar el botón después de la instalación
+});
 
 
 // Crear un contenedor para el selector de dificultad y el botón
