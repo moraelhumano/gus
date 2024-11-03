@@ -28,6 +28,7 @@ body {
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
+    color:#000;
 }
 
 .jokes-table th, .jokes-table td {

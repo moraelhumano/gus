@@ -170,6 +170,12 @@ async function getJokes() {
         console.error("Error al obtener los chistes:", error);
     }
 }
+
+
+
+
+
+
 // Crear un contenedor para el selector de dificultad y el botón
 const controlContainer = document.createElement("div");
 controlContainer.style.display = "flex"; // Usar flexbox
