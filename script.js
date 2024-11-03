@@ -1,7 +1,8 @@
 // script.js
-import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-auth.js";
-import { getFirestore, collection, getDocs, addDoc, query, where } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-firestore.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, deleteUser } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-auth.js";
+import { getFirestore, collection, getDocs, addDoc, query, where, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-firestore.js";
 import { themes } from  "/words.js";
+
 
 
 
@@ -17,6 +18,7 @@ const loginContainer = document.getElementById("login-container");
 const timerBar = document.getElementById("timer-bar");
 const difficultySelect = document.getElementById("difficulty-select");
 
+
 let currentUser = null;
 let points = 0;
 let currentJokeTheme = '';
@@ -26,9 +28,6 @@ let totalTime;
 // Arreglo de temas
 // Arreglo de temas y palabras
 
-
-
-// Función para mostrar la información del usuario
 function displayUserInfo() {
     // Elimina la información de usuario existente si ya hay una
     const existingUserInfo = document.getElementById("user-info");
@@ -38,17 +37,19 @@ function displayUserInfo() {
 
     if (currentUser) {
         const userInfo = document.createElement("div");
-        userInfo.classList.add("flex", "justify-around" , "items-center", "font-semibold");
+        userInfo.classList.add("flex", "justify-around" , "items-center", "font-semibold", "bg-red-nintendo" , "py-4");
         userInfo.id = "user-info"; // Añade un ID para poder identificarlo
         userInfo.innerHTML = `
-            <img src="${currentUser.photoURL}" alt="Foto de perfil" class="w-16 h-16 rounded-full  mb-2" />
-            <p class="text-lg">Bienvenido a G.U.S, ${currentUser.displayName}!</p>
-            <button id="logout-button" class="h-auto bg-red-500 text-white px-4 py-1 rounded hover:bg-cyan-500">Cerrar sesión</button>
+            <img src="gus-logo.png" alt="Foto de perfil" class=" h-10" />
         `;
 
         // Inserta el contenedor de usuario antes del contenedor de inicio de sesión
         const loginContainer = document.getElementById("login-container");
         loginContainer.insertAdjacentElement('beforebegin', userInfo); // Inserta antes del contenedor de inicio de sesión
+
+        // Actualiza la imagen del usuario en el menú
+        const userAvatar = document.getElementById("user-avatar");
+        userAvatar.src = currentUser.photoURL;
 
         // Agregar evento de cierre de sesión
         document.getElementById("logout-button").addEventListener("click", async () => {
@@ -60,10 +61,12 @@ function displayUserInfo() {
             updatePointsDisplay();
             jokeContainer.innerHTML = ""; // Limpiar chistes al cerrar sesión
             currentJokeTheme = ''; // Limpiar el tema actual
-            document.getElementById("current-theme").innerText = "Tema actual: "; // Limpiar el tema en el DOM
+            document.getElementById("current-theme").innerText = "Por 2 puntos escribe sobre: "; // Limpiar el tema en el DOM
         });
     }
 }
+
+
 
 // Función para iniciar sesión con Google
 async function loginWithGoogle() {
@@ -78,101 +81,90 @@ async function loginWithGoogle() {
     }
 }
 
-// Función para obtener los chistes de Firestore
-// Función para obtener los chistes de Firestore
+
+
 async function getJokes() {
     try {
-        const q = query(collection(db, "jokes"), where("userId", "==", currentUser.uid)); // Filtrar por userId
+        const q = query(collection(db, "jokes"), where("userId", "==", currentUser.uid));
         const querySnapshot = await getDocs(q);
         
         jokeContainer.innerHTML = ""; // Limpia el contenedor de chistes
-        let totalPoints = 0; // Inicializa los puntos totales
+        let totalPoints = 0;
 
         // Crear el elemento tabla y los encabezados
         const table = document.createElement("table");
-        table.classList.add("jokes-table"); // Añadir una clase para estilizar la tabla si lo deseas
-        
+        table.classList.add("jokes-table");
+
         const headerRow = document.createElement("tr");
-        const headers = ["Tema", "Chiste"];
-        
+        const headers = ["Tema", "Chiste", "Acciones"]; // Añadir encabezado de acciones
+
         headers.forEach(headerText => {
             const header = document.createElement("th");
             header.classList.add("border-bottom");
             header.textContent = headerText;
             headerRow.appendChild(header);
         });
-        
+
         table.appendChild(headerRow);
 
         // Crear una fila para cada chiste
         querySnapshot.forEach((doc) => {
             const jokeData = doc.data();
-            console.log(jokeData); // Verificar qué datos estás recibiendo
 
             if (jokeData.topic && jokeData.content) {
                 const row = document.createElement("tr");
 
-                // Crear celdas para cada dato
                 const topicCell = document.createElement("td");
                 topicCell.textContent = jokeData.topic;
-                
+
                 const contentCell = document.createElement("td");
                 contentCell.textContent = jokeData.content;
-                
 
-                // Añadir las celdas a la fila
+                // Crear la celda de acción con el botón de eliminar
+                const actionCell = document.createElement("td");
+                const deleteButton = document.createElement("button");
+                deleteButton.textContent = "Eliminar";
+                deleteButton.classList.add("bg-red-500", "text-white", "px-4", "py-2", "rounded", "hover:bg-red-600");
+
+                // Agregar el evento de eliminación
+                deleteButton.addEventListener("click", async () => {
+                    const confirmation = confirm("¿Estás seguro de que deseas eliminar este chiste?");
+                    if (confirmation) {
+                        await deleteJoke(doc.id);
+                        await getJokes();
+                    }
+                });
+
+                actionCell.appendChild(deleteButton);
                 row.appendChild(topicCell);
                 row.appendChild(contentCell);
+                row.appendChild(actionCell); // Agregar celda de acción
 
-                // Añadir la fila a la tabla
                 table.appendChild(row);
-
-                // Sumar los puntos del chiste actual
-                totalPoints += jokeData.points;
             } else {
                 console.warn(`El documento ${doc.id} no contiene el tema o el chiste.`);
             }
         });
-        
-        jokeContainer.appendChild(table); // Agregar la tabla al contenedor de chistes
-        points = totalPoints; // Actualiza la variable de puntos acumulados
-        updatePointsDisplay(); // Actualiza la visualización de puntos
+
+        jokeContainer.appendChild(table);
+        points = totalPoints;
+        updatePointsDisplay();
     } catch (error) {
         console.error("Error al obtener los chistes:", error);
     }
 }
 
-
-// Función para agregar un chiste a Firestore, incluyendo el nombre del usuario
-
-
-async function getAllJokes() {
+// Función para eliminar un chiste
+async function deleteJoke(jokeId) {
     try {
-        const querySnapshot = await getDocs(collection(db, "jokes"));
-        allJokesList.innerHTML = ""; // Limpiar la lista de chistes
-
-        querySnapshot.forEach((doc) => {
-            const jokeData = doc.data();
-            const jokeDate = new Date(jokeData.timestamp.toDate()); // Convertir timestamp a Date
-            const formattedDate = jokeDate.toLocaleString(); // Formato legible
-
-            if (jokeData.content && jokeData.userName) {
-                allJokesList.innerHTML += `
-                    <div class="mb-4 border p-2 rounded">
-                        <p class="font-bold">${jokeData.userName}</p>
-                        <p>Tema: ${jokeData.topic}</p>
-                        <p>Chiste: ${jokeData.content}</p>
-                        <p class="text-gray-500 text-sm">${formattedDate}</p>
-                    </div>
-                `;
-            }
-        });
-
-        allJokesContainer.style.display = "block"; // Mostrar el contenedor
+        await deleteDoc(doc(db, "jokes", jokeId)); // Eliminar el documento del chiste por su ID
+        displayMessage("¡Chiste eliminado con éxito!");
     } catch (error) {
-        console.error("Error al obtener los chistes de otros usuarios:", error);
+        console.error("Error al eliminar el chiste:", error);
+        displayMessage("Error al eliminar el chiste.");
     }
 }
+
 
 // Función para actualizar la visualización de puntos
 function updatePointsDisplay() {
@@ -189,65 +181,29 @@ function displayMessage(msg) {
     }, 3000);
 }
 
+
+// Al iniciar, oculta el input y el botón de enviar
+jokeInput.style.display = "none"; // Ocultar el input inicialmente
+submitJokeButton.style.display = "none"; // Ocultar el botón de enviar inicialmente
+
+// ...
+
 // Función para iniciar el juego
 function startGame() {
+    // Ocultar el botón de inicio
+    startButton.style.display = "none";
+
     currentJokeTheme = getRandomTheme(); // Obtener un tema aleatorio
-    document.getElementById("current-theme").innerText = `Tema actual: ${currentJokeTheme}`; // Mostrar tema actual
+    document.getElementById("current-theme").innerText = `Por 2 puntos escribe sobre: ${currentJokeTheme}`; // Mostrar tema actual
     totalTime = getTotalTime();
     startTimer();
     jokeContainer.innerHTML = ""; // Limpiar chistes anteriores
-}
 
-// Función para obtener el tiempo total según la dificultad
-function getTotalTime() {
-    const difficulty = difficultySelect.value;
-    switch (difficulty) {
-        case "easy": return 90; // 1:30 minutos
-        case "medium": return 60; // 1 minuto
-        case "hard": return 30; // 30 segundos
-        default: return 60; // Valor por defecto
-    }
+    // Mostrar el input de chiste y el botón de enviar
+    jokeInput.style.display = "block"; // Mostrar el input
+    submitJokeButton.style.display = "block"; // Mostrar el botón de enviar
 }
-
 // Función para iniciar el temporizador
-let isGameOver = false; // Variable de control para verificar si el juego ha terminado
-
-// Función para iniciar el temporizador
-async function saveJoke() {
-    const joke = jokeInput.value;
-    if (!joke || !currentUser) return;
-
-    try {
-        const userName = currentUser.displayName || "Usuario desconocido";
-        
-        await addDoc(collection(db, "jokes"), {
-            userId: currentUser.uid,
-            userName: userName,
-            topic: currentJokeTheme,
-            content: joke,
-            points: 2,
-            timestamp: new Date(),
-            ratings: []
-        });
-        
-        points += 2;
-        currentJokeTheme = '';
-        document.getElementById("current-theme").innerText = "Tema actual: ";
-        jokeInput.value = ""; 
-        updatePointsDisplay();
-        
-        isGameOver = true; // Termina el juego al enviar el chiste
-        resetTimer(); // Detén el temporizador
-        displayMessage("¡Chiste enviado!");
-        
-        // Llama a getJokes() para refrescar la lista de chistes
-        await getJokes();
-    } catch (error) {
-        console.error("Error al guardar el chiste:", error);
-    }
-}
-
-
 function startTimer() {
     timerBar.style.width = "100%";
     isGameOver = false;
@@ -265,14 +221,81 @@ function startTimer() {
             clearInterval(timer);
             if (!isGameOver) {
                 displayMessage("Se acabó el tiempo! Has obtenido 1 punto.");
-                points += 1;
+                
+                // Cambiar el valor de current-theme de 2 a 1
+                document.getElementById("current-theme").innerText = "Por 1 punto escribe sobre: ";
+
+                points += 1; // Solo se sumará 1 punto
                 updatePointsDisplay();
                 isGameOver = true;
+
+                // Vuelve a mostrar el botón de inicio
+                startButton.style.display = "block"; // Mostrar el botón de inicio
             }
             resetTimer();
         }
     }, 1000);
 }
+
+// Modificar la función saveJoke
+async function saveJoke() {
+    const joke = jokeInput.value;
+    if (!joke || !currentUser) return;
+
+    try {
+        const userName = currentUser.displayName || "Usuario desconocido";
+
+        // Cambiar la lógica aquí: si el tiempo ha terminado, solo sumamos 1 punto.
+        const pointsToAdd = (isGameOver) ? 1 : 2;
+
+        await addDoc(collection(db, "jokes"), {
+            userId: currentUser.uid,
+            userName: userName,
+            topic: currentJokeTheme,
+            content: joke,
+            points: pointsToAdd, // Añadimos los puntos correctos según el estado del juego
+            timestamp: new Date(),
+            ratings: []
+        });
+
+        points += pointsToAdd;
+        currentJokeTheme = '';
+        document.getElementById("current-theme").innerText = "Por 2 puntos escribe sobre: ";
+        jokeInput.value = ""; 
+        updatePointsDisplay();
+
+        isGameOver = true; // Termina el juego al enviar el chiste
+        resetTimer(); // Detén el temporizador
+        displayMessage("¡Chiste enviado!");
+
+        // Vuelve a mostrar el botón de inicio
+        startButton.style.display = "block"; // Mostrar el botón de inicio
+
+        // Llama a getJokes() para refrescar la lista de chistes
+        await getJokes();
+    } catch (error) {
+        console.error("Error al guardar el chiste:", error);
+    }
+}
+
+// Función para obtener el tiempo total según la dificultad
+function getTotalTime() {
+    const difficulty = difficultySelect.value;
+    switch (difficulty) {
+        case "easy": return 90; // 1:30 minutos
+        case "medium": return 60; // 1 minuto
+        case "hard": return 30; // 30 segundos
+        default: return 60; // Valor por defecto
+    }
+}
+
+// Función para iniciar el temporizador
+let isGameOver = false; // Variable de control para verificar si el juego ha terminado
+
+
+
+
+
 
 // Función para reiniciar el temporizador
 function resetTimer() {
@@ -303,7 +326,7 @@ auth.onAuthStateChanged((user) => {
         jokeContainer.innerHTML = ""; // Limpiar los chistes al cerrar sesión
         points = 0; // Reiniciar los puntos
         updatePointsDisplay(); // Actualizar la visualización de puntos
-        document.getElementById("current-theme").innerText = "Tema actual: "; // Limpiar el tema en el DOM
+        document.getElementById("current-theme").innerText = "Por 2 puntos escribe sobre: "; // Limpiar el tema en el DOM
     }
 });
 
