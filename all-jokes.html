@@ -15,83 +15,95 @@
 
     <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-auth.js"; // Asegúrate de importar `onAuthStateChanged`
-import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-auth.js"; 
+    import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-firestore.js";
 
-const firebaseConfig = {
-    apiKey: "AIzaSyDgFJNyUL2AxT6YatY84E1udDkMSz9DGGs",
-    authDomain: "risapp-37bd9.firebaseapp.com",
-    projectId: "risapp-37bd9",
-    storageBucket: "risapp-37bd9.appspot.com",
-    messagingSenderId: "909578481013",
-    appId: "1:909578481013:web:541567a62b2c71f019773c",
-    measurementId: "G-46EQJBZQ3T"
-};
+    const firebaseConfig = {
+        apiKey: "AIzaSyDgFJNyUL2AxT6YatY84E1udDkMSz9DGGs",
+        authDomain: "risapp-37bd9.firebaseapp.com",
+        projectId: "risapp-37bd9",
+        storageBucket: "risapp-37bd9.appspot.com",
+        messagingSenderId: "909578481013",
+        appId: "1:909578481013:web:541567a62b2c71f019773c",
+        measurementId: "G-46EQJBZQ3T"
+    };
 
-// Inicializar Firebase
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app); // Obtener la instancia de autenticación
+    // Inicializar Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app); 
 
-// Obtén el ID del usuario actual
-onAuthStateChanged(auth, user => {
-  if (user) {
-    const userId = user.uid; // ID del usuario actual
-
-    // Accede a la colección de chistes y filtra por userId
-    const q = query(collection(db, "jokes"), where("userId", "==", userId)); // Filtra los chistes por el ID del usuario
-    getDocs(q)
-      .then(snapshot => {
-        snapshot.forEach(doc => {
-          const jokeData = doc.data();
-          // Aquí agrega el chiste a tu interfaz
-          const jokesContainer = document.getElementById("jokes-container");
-          const jokeDiv = document.createElement("div");
-          jokeDiv.classList.add("p-2", "border-b");
-
-          jokeDiv.innerHTML = `
-              <strong>${jokeData.userName} (${jokeData.topic}):</strong>
-              <p>${jokeData.content}</p>
-          `;
-
-          jokesContainer.appendChild(jokeDiv);
+    // Función para formatear la fecha
+    function formatTimestamp(timestamp) {
+        const date = new Date(timestamp.seconds * 1000); // Convertir a milisegundos
+        return date.toLocaleString("es-MX", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
         });
-      })
-      .catch(error => {
-        console.error("Error al obtener los chistes: ", error);
-      });
-  } else {
-    // No hay usuario autenticado, redirigir o mostrar mensaje
-    console.log("No hay usuario autenticado");
-  }
-});
+    }
 
+    // Obtén el ID del usuario actual
+    onAuthStateChanged(auth, user => {
+      if (user) {
+        const userId = user.uid; 
 
+        // Accede a la colección de chistes y filtra por userId
+        const q = query(collection(db, "jokes"), where("userId", "==", userId)); 
+        getDocs(q)
+          .then(snapshot => {
+            snapshot.forEach(doc => {
+              const jokeData = doc.data();
+              const jokesContainer = document.getElementById("jokes-container");
+              const jokeDiv = document.createElement("div");
+              jokeDiv.classList.add("p-2", "border-b");
 
-        async function loadJokes() {
-            const jokesContainer = document.getElementById("jokes-container");
-            jokesContainer.innerHTML = ""; // Limpiar el contenedor
+              jokeDiv.innerHTML = `
+                  <strong>${jokeData.userName} (${jokeData.topic}):</strong>
+                  <p>${jokeData.content}</p>
+                  <p class="text-gray-600">Dificultad: ${jokeData.difficulty}</p> <!-- Mostrar dificultad -->
+                  <p class="text-gray-500">Enviado el: ${formatTimestamp(jokeData.timestamp)}</p> <!-- Mostrar fecha -->
+              `;
 
-            const q = query(collection(db, "jokes")); // Obtener todos los chistes
-            const querySnapshot = await getDocs(q);
-
-            querySnapshot.forEach((doc) => {
-                const jokeData = doc.data();
-                const jokeDiv = document.createElement("div");
-                jokeDiv.classList.add("p-2", "border-b");
-
-                jokeDiv.innerHTML = `
-                    <strong>${jokeData.userName} (${jokeData.topic}):</strong>
-                    <p>${jokeData.content}</p>
-                `;
-
-                jokesContainer.appendChild(jokeDiv);
+              jokesContainer.appendChild(jokeDiv);
             });
-        }
+          })
+          .catch(error => {
+            console.error("Error al obtener los chistes: ", error);
+          });
+      } else {
+        console.log("No hay usuario autenticado");
+      }
+    });
 
-        loadJokes(); // Cargar los chistes al iniciar la página
+    async function loadJokes() {
+        const jokesContainer = document.getElementById("jokes-container");
+        jokesContainer.innerHTML = ""; 
 
-        
+        const q = query(collection(db, "jokes")); 
+        const querySnapshot = await getDocs(q);
+
+        querySnapshot.forEach((doc) => {
+            const jokeData = doc.data();
+            const jokeDiv = document.createElement("div");
+            jokeDiv.classList.add("p-2", "border-b");
+
+            jokeDiv.innerHTML = `
+                <strong>${jokeData.userName} (${jokeData.topic}):</strong>
+                <p>${jokeData.content}</p>
+                <p class="text-gray-600">Dificultad: ${jokeData.difficulty}</p> <!-- Mostrar dificultad -->
+                <p class="text-gray-500">Fue enviado en ${jokeData.timeSpent} segundos</p> <!-- Mostrar fecha -->
+            `;
+
+            jokesContainer.appendChild(jokeDiv);
+        });
+    }
+
+    loadJokes(); // Cargar los chistes al iniciar la página
+
     </script>
 </body>
 </html>

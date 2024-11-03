@@ -30,16 +30,65 @@
         // Exportar auth y db para su uso en otros scripts
         window.auth = auth;
         window.db = db;
+
+        // Función para alternar el modo oscuro
+        document.addEventListener("DOMContentLoaded", () => {
+            const themeButton = document.getElementById("theme-toggle");
+            const body = document.body;
+            const difficultySelect = document.getElementById("difficulty-select");
+            const jokeInput = document.getElementById("joke-input"); // Obtener el input del chiste
+
+            // Comprobar el estado del modo oscuro en el almacenamiento local
+            const isDarkMode = localStorage.getItem("darkMode") === "true";
+            if (isDarkMode) {
+                body.classList.add("bg-gray-900", "text-white");
+                difficultySelect.classList.add("text-black"); // Cambiar texto a negro en el modo oscuro
+                jokeInput.classList.add("text-black"); // Cambiar texto del input a negro en modo oscuro
+                themeButton.textContent = "🌙"; // Modo oscuro
+            } else {
+                themeButton.textContent = "☀️"; // Modo claro
+            }
+
+            themeButton.addEventListener("click", () => {
+                body.classList.toggle("bg-gray-900");
+                body.classList.toggle("text-white");
+                const isDarkMode = body.classList.contains("bg-gray-900");
+                themeButton.textContent = isDarkMode ? "🌙" : "☀️"; // Cambia el emoji según el modo
+
+                // Cambiar el color del texto del select y del input según el modo
+                if (isDarkMode) {
+                    difficultySelect.classList.add("text-black");
+                    jokeInput.classList.add("text-black"); // Aplicar texto negro al input en modo oscuro
+                } else {
+                    difficultySelect.classList.remove("text-black");
+                    jokeInput.classList.remove("text-black"); // Remover texto negro al input en modo claro
+                }
+
+                // Guardar el estado en el almacenamiento local
+                localStorage.setItem("darkMode", isDarkMode);
+            });
+        });
     </script>
 </head>
 <body class="bg-gray-100 font-sans">
 
     <div class="container mx-auto">
+        <!-- Barra de navegación con el logo y el botón de tema -->
+        <div class="bg-red-600 p-4 flex justify-between items-center">
+            <div class="text-white font-bold">GUS-LOGO</div>
+            <div class="flex items-center">
+                <button id="theme-toggle" class="text-white text-2xl cursor-pointer">
+                    ☀️
+                </button>
+            </div>
+        </div>
+
         <div id="login-container" class="text-center py-4">
             <button id="login-button" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
                 Iniciar Sesión con Google
             </button>
         </div>
+        
         <div id="game-container" class="mt-10 px-4" style="display: none;">
             <div id="points-display" class="text-lg text-center px-4 hidden"></div>
             <div class="mb-4 text-center">
@@ -66,7 +115,7 @@
                 </button>
             </div>
         </div>
-        
+
         <div id="joke-container" class="bg-white p-4 rounded shadow"></div>
     </div>
 
