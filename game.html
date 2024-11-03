@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="style.css">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <script type="module">
+        // Importación de Firebase
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-app.js";
         import { getAuth } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-auth.js";
         import { getFirestore } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-firestore.js";
@@ -26,7 +27,7 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // Exportar auth y db para su uso en script.js
+        // Exportar auth y db para su uso en otros scripts
         window.auth = auth;
         window.db = db;
     </script>
@@ -43,7 +44,7 @@
             <div id="points-display" class="text-lg text-center px-4 hidden"></div>
             <div class="mb-4 text-center">
                 <label for="difficulty-select" class="font-semibold text-xl">Selecciona la dificultad:</label>
-                <select id="difficulty-select" class="border rounded p-2 mt-4 ">
+                <select id="difficulty-select" class="border rounded p-2 mt-4">
                     <option value="easy">Leyenda...s Legendarias (1:30 minutos)</option>
                     <option value="medium">Cotorrisa (1 minuto)</option>
                     <option value="hard">Mesa de la Logia (30 segundos)</option>
@@ -52,7 +53,7 @@
             <div id="timer" class="mb-4">
                 <div id="timer-bar" class="bg-green-500 h-6 rounded" style="width: 100%;"></div>
             </div>
-            <div id="current-theme" class="font-semibold text-xl">Por 2 puntos escribe sobre: </div>
+            <div id="current-theme" class="font-semibold text-xl">Por 2 puntos escribe sobre:</div>
             <div class="mb-4 mt-2">
                 <input type="text" id="joke-input" placeholder="Escribe tu chiste aquí" class="border rounded p-2 w-full">
             </div>
@@ -69,36 +70,8 @@
         <div id="joke-container" class="bg-white p-4 rounded shadow"></div>
     </div>
 
-
-
-    <!-- Menú para dispositivos móviles -->
-    <!-- <div class="fixed bottom-0 left-0 right-0 bg-white shadow-lg p-2 flex justify-around">
-       
-            <a href="all-jokes.html" class="text-blue-500">
-               <div class="flex flex-col items-center no-underline text-current">
-                <span>😄</span> 
-                <span class="text-black">Tus chistes</span>
-               </div>
-            </a> -->
- 
-<!--         
-        <div class="flex flex-col items-center">
-            <img id="user-avatar" src="" alt="Usuario" class="w-8 h-8 rounded-full">
-        </div>
-        <div class="flex flex-col items-center">
-            <span>⚙️</span>
-            <span>Confiuración</span>
-        </div> -->
-        <!-- <div class="flex flex-col items-center">
-            <span>📊</span>
-            <span>Estadísticas</span>
-        </div> 
-     </div> -->
-    
-    
     <script type="module" src="script.js"></script>
     <script type="module" src="vote.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-
 </body>
 </html>

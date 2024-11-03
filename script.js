@@ -28,6 +28,10 @@ let totalTime;
 // Arreglo de temas
 // Arreglo de temas y palabras
 
+
+
+// Función para mostrar la información del usuario
+// Función para mostrar la información del usuario
 function displayUserInfo() {
     // Elimina la información de usuario existente si ya hay una
     const existingUserInfo = document.getElementById("user-info");
@@ -65,7 +69,6 @@ function displayUserInfo() {
         });
     }
 }
-
 
 
 // Función para iniciar sesión con Google
@@ -197,12 +200,13 @@ function startGame() {
     document.getElementById("current-theme").innerText = `Por 2 puntos escribe sobre: ${currentJokeTheme}`; // Mostrar tema actual
     totalTime = getTotalTime();
     startTimer();
-    jokeContainer.innerHTML = ""; // Limpiar chistes anteriores
 
-    // Mostrar el input de chiste y el botón de enviar
+    // No limpiar el contenedor de chistes para mantener la tabla visible
+    jokeInput.value = ""; // Limpiar el input del chiste
     jokeInput.style.display = "block"; // Mostrar el input
     submitJokeButton.style.display = "block"; // Mostrar el botón de enviar
 }
+
 // Función para iniciar el temporizador
 function startTimer() {
     timerBar.style.width = "100%";
@@ -220,7 +224,6 @@ function startTimer() {
         if (totalTime <= 0) {
             clearInterval(timer);
             if (!isGameOver) {
-                displayMessage("Se acabó el tiempo! Has obtenido 1 punto.");
                 
                 // Cambiar el valor de current-theme de 2 a 1
                 document.getElementById("current-theme").innerText = "Por 1 punto escribe sobre: ";
