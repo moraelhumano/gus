@@ -51,7 +51,7 @@ function displayUserInfo() {
 
         // Actualiza la imagen del usuario en el menú
         const userAvatar = document.getElementById("user-avatar");
-        userAvatar.src = currentUser.photoURL;
+        //userAvatar.src = currentUser.photoURL;
 
         // Agregar evento de cierre de sesión
         document.getElementById("logout-button").addEventListener("click", async () => {
