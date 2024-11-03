@@ -39,34 +39,48 @@ function displayUserInfo() {
 
     if (currentUser) {
         const userInfo = document.createElement("div");
-         userInfo.classList.add("hidden");
-         userInfo.id = "user-info"; 
-         userInfo.innerHTML = `
-             <img src="gus-logo.png" alt="Foto de perfil" class=" h-10" />
-         `;
+        userInfo.classList.add("hidden");
+        userInfo.id = "user-info"; 
+        userInfo.innerHTML = `
+            <img src="gus-logo.png" alt="Foto de perfil" class="h-10" />
+        `;
 
         // Inserta el contenedor de usuario antes del contenedor de inicio de sesión
         const loginContainer = document.getElementById("login-container");
-        loginContainer.insertAdjacentElement('beforebegin', userInfo); // Inserta antes del contenedor de inicio de sesión
+        if (loginContainer) {
+            loginContainer.insertAdjacentElement('beforebegin', userInfo); // Inserta antes del contenedor de inicio de sesión
+        }
 
         // Actualiza la imagen del usuario en el menú
         const userAvatar = document.getElementById("user-avatar");
-        //userAvatar.src = currentUser.photoURL;
+        if (userAvatar) {
+            //userAvatar.src = currentUser.photoURL; // Descomenta esta línea si tienes la URL de la foto del usuario
+        }
 
-        // Agregar evento de cierre de sesión
-        document.getElementById("logout-button").addEventListener("click", async () => {
-            await auth.signOut();
-            userInfo.remove();
-            gameContainer.style.display = "none"; // Ocultar contenedor del juego
-            loginContainer.style.display = "block"; // Mostrar botón de inicio de sesión
-            points = 0; // Reinicia los puntos
-            updatePointsDisplay();
-            jokeContainer.innerHTML = ""; // Limpiar chistes al cerrar sesión
-            currentJokeTheme = ''; // Limpiar el tema actual
-            document.getElementById("current-theme").innerText = "Por 2 puntos escribe sobre: "; // Limpiar el tema en el DOM
-        });
+        // Asegúrate de que el botón de cierre de sesión exista
+        const logoutButton = document.getElementById("logout-button");
+        if (logoutButton) {
+            // Agregar evento de cierre de sesión
+            logoutButton.addEventListener("click", async () => {
+                await auth.signOut();
+                userInfo.remove();
+                gameContainer.style.display = "none"; // Ocultar contenedor del juego
+                loginContainer.style.display = "block"; // Mostrar botón de inicio de sesión
+                points = 0; // Reinicia los puntos
+                updatePointsDisplay();
+                jokeContainer.innerHTML = ""; // Limpiar chistes al cerrar sesión
+                currentJokeTheme = ''; // Limpiar el tema actual
+                document.getElementById("current-theme").innerText = "Por 2 puntos escribe sobre: "; // Limpiar el tema en el DOM
+            });
+        } else {
+            console.warn("El botón de cierre de sesión no se encontró en el DOM.");
+        }
     }
 }
+
+// Asegúrate de que displayUserInfo se llame después de que se haya cargado el DOM
+document.addEventListener("DOMContentLoaded", displayUserInfo);
+
 
 
 // Función para iniciar sesión con Google
