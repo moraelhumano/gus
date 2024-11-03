@@ -29,12 +29,6 @@ let startTime; // Agregar la variable startTime aquí
 let isGameOver = false; // Variable de control para verificar si el juego ha terminado
 
 
-// Arreglo de temas
-// Arreglo de temas y palabras
-
-
-
-// Función para mostrar la información del usuario
 // Función para mostrar la información del usuario
 function displayUserInfo() {
     // Elimina la información de usuario existente si ya hay una
@@ -113,7 +107,7 @@ async function getJokes() {
         table.classList.add("jokes-table");
 
         const headerRow = document.createElement("tr");
-        const headers = ["Tema", "Chiste", "Acciones"]; // Añadir encabezado de acciones
+        const headers = [ "Chiste", "Acciones"]; // Añadir encabezado de acciones
 
         headers.forEach(headerText => {
             const header = document.createElement("th");
@@ -140,8 +134,8 @@ async function getJokes() {
                 // Crear la celda de acción con el botón de eliminar
                 const actionCell = document.createElement("td");
                 const deleteButton = document.createElement("button");
-                deleteButton.textContent = "Eliminar";
-                deleteButton.classList.add("bg-red-500", "text-white", "px-4", "py-2", "rounded", "hover:bg-red-600");
+                deleteButton.innerHTML = "🗑️"; // Cambiar el texto por el emoji de bote de basura
+                deleteButton.classList.add("px-4", "py-2", "rounded", "hover:bg-red-600");
 
                 // Agregar el evento de eliminación
                 deleteButton.addEventListener("click", async () => {
