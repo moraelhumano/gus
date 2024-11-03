@@ -64,7 +64,7 @@ function displayUserInfo() {
             updatePointsDisplay();
             jokeContainer.innerHTML = ""; // Limpiar chistes al cerrar sesión
             currentJokeTheme = ''; // Limpiar el tema actual
-            document.getElementById("current-theme").innerText = "Tema actual: "; // Limpiar el tema en el DOM
+            document.getElementById("current-theme").innerText = "Por 2 puntos escribe sobre: "; // Limpiar el tema en el DOM
         });
     }
 }
@@ -170,65 +170,28 @@ function displayMessage(msg) {
 }
 
 
+// Al iniciar, oculta el input y el botón de enviar
+jokeInput.style.display = "none"; // Ocultar el input inicialmente
+submitJokeButton.style.display = "none"; // Ocultar el botón de enviar inicialmente
+
+// ...
+
 // Función para iniciar el juego
 function startGame() {
+    // Ocultar el botón de inicio
+    startButton.style.display = "none";
+
     currentJokeTheme = getRandomTheme(); // Obtener un tema aleatorio
-    document.getElementById("current-theme").innerText = `Tema actual: ${currentJokeTheme}`; // Mostrar tema actual
+    document.getElementById("current-theme").innerText = `Por 2 puntos escribe sobre: ${currentJokeTheme}`; // Mostrar tema actual
     totalTime = getTotalTime();
     startTimer();
     jokeContainer.innerHTML = ""; // Limpiar chistes anteriores
-}
 
-// Función para obtener el tiempo total según la dificultad
-function getTotalTime() {
-    const difficulty = difficultySelect.value;
-    switch (difficulty) {
-        case "easy": return 90; // 1:30 minutos
-        case "medium": return 60; // 1 minuto
-        case "hard": return 30; // 30 segundos
-        default: return 60; // Valor por defecto
-    }
+    // Mostrar el input de chiste y el botón de enviar
+    jokeInput.style.display = "block"; // Mostrar el input
+    submitJokeButton.style.display = "block"; // Mostrar el botón de enviar
 }
-
 // Función para iniciar el temporizador
-let isGameOver = false; // Variable de control para verificar si el juego ha terminado
-
-// Función para iniciar el temporizador
-async function saveJoke() {
-    const joke = jokeInput.value;
-    if (!joke || !currentUser) return;
-
-    try {
-        const userName = currentUser.displayName || "Usuario desconocido";
-        
-        await addDoc(collection(db, "jokes"), {
-            userId: currentUser.uid,
-            userName: userName,
-            topic: currentJokeTheme,
-            content: joke,
-            points: 2,
-            timestamp: new Date(),
-            ratings: []
-        });
-        
-        points += 2;
-        currentJokeTheme = '';
-        document.getElementById("current-theme").innerText = "Tema actual: ";
-        jokeInput.value = ""; 
-        updatePointsDisplay();
-        
-        isGameOver = true; // Termina el juego al enviar el chiste
-        resetTimer(); // Detén el temporizador
-        displayMessage("¡Chiste enviado!");
-        
-        // Llama a getJokes() para refrescar la lista de chistes
-        await getJokes();
-    } catch (error) {
-        console.error("Error al guardar el chiste:", error);
-    }
-}
-
-
 function startTimer() {
     timerBar.style.width = "100%";
     isGameOver = false;
@@ -246,14 +209,81 @@ function startTimer() {
             clearInterval(timer);
             if (!isGameOver) {
                 displayMessage("Se acabó el tiempo! Has obtenido 1 punto.");
-                points += 1;
+                
+                // Cambiar el valor de current-theme de 2 a 1
+                document.getElementById("current-theme").innerText = "Por 1 punto escribe sobre: ";
+
+                points += 1; // Solo se sumará 1 punto
                 updatePointsDisplay();
                 isGameOver = true;
+
+                // Vuelve a mostrar el botón de inicio
+                startButton.style.display = "block"; // Mostrar el botón de inicio
             }
             resetTimer();
         }
     }, 1000);
 }
+
+// Modificar la función saveJoke
+async function saveJoke() {
+    const joke = jokeInput.value;
+    if (!joke || !currentUser) return;
+
+    try {
+        const userName = currentUser.displayName || "Usuario desconocido";
+
+        // Cambiar la lógica aquí: si el tiempo ha terminado, solo sumamos 1 punto.
+        const pointsToAdd = (isGameOver) ? 1 : 2;
+
+        await addDoc(collection(db, "jokes"), {
+            userId: currentUser.uid,
+            userName: userName,
+            topic: currentJokeTheme,
+            content: joke,
+            points: pointsToAdd, // Añadimos los puntos correctos según el estado del juego
+            timestamp: new Date(),
+            ratings: []
+        });
+
+        points += pointsToAdd;
+        currentJokeTheme = '';
+        document.getElementById("current-theme").innerText = "Por 2 puntos escribe sobre: ";
+        jokeInput.value = ""; 
+        updatePointsDisplay();
+
+        isGameOver = true; // Termina el juego al enviar el chiste
+        resetTimer(); // Detén el temporizador
+        displayMessage("¡Chiste enviado!");
+
+        // Vuelve a mostrar el botón de inicio
+        startButton.style.display = "block"; // Mostrar el botón de inicio
+
+        // Llama a getJokes() para refrescar la lista de chistes
+        await getJokes();
+    } catch (error) {
+        console.error("Error al guardar el chiste:", error);
+    }
+}
+
+// Función para obtener el tiempo total según la dificultad
+function getTotalTime() {
+    const difficulty = difficultySelect.value;
+    switch (difficulty) {
+        case "easy": return 90; // 1:30 minutos
+        case "medium": return 60; // 1 minuto
+        case "hard": return 30; // 30 segundos
+        default: return 60; // Valor por defecto
+    }
+}
+
+// Función para iniciar el temporizador
+let isGameOver = false; // Variable de control para verificar si el juego ha terminado
+
+
+
+
+
 
 // Función para reiniciar el temporizador
 function resetTimer() {
@@ -284,7 +314,7 @@ auth.onAuthStateChanged((user) => {
         jokeContainer.innerHTML = ""; // Limpiar los chistes al cerrar sesión
         points = 0; // Reiniciar los puntos
         updatePointsDisplay(); // Actualizar la visualización de puntos
-        document.getElementById("current-theme").innerText = "Tema actual: "; // Limpiar el tema en el DOM
+        document.getElementById("current-theme").innerText = "Por 2 puntos escribe sobre: "; // Limpiar el tema en el DOM
     }
 });
 
