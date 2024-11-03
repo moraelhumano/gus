@@ -83,8 +83,7 @@ async function loginWithGoogle() {
     }
 }
 
-// Función para obtener los chistes de Firestore
-// Función para obtener los chistes de Firestore
+
 async function getJokes() {
     try {
         const q = query(collection(db, "jokes"), where("userId", "==", currentUser.uid)); // Filtrar por userId
@@ -92,6 +91,18 @@ async function getJokes() {
         
         jokeContainer.innerHTML = ""; // Limpia el contenedor de chistes
         let totalPoints = 0; // Inicializa los puntos totales
+
+        // Calcular los puntos totales
+        querySnapshot.forEach((doc) => {
+            const jokeData = doc.data();
+            totalPoints += jokeData.points || 0; // Asegúrate de que cada chiste tenga un valor de puntos
+        });
+
+        // Crear y agregar el elemento de visualización de puntos totales
+        const pointsElement = document.createElement("div");
+        pointsElement.classList.add("text-xl", "font-bold", "mb-4", "text-gray-700");
+        pointsElement.innerText = `Puntos Totales: ${totalPoints}`;
+        jokeContainer.appendChild(pointsElement); // Agregar el elemento de puntos antes de la tabla
 
         // Crear el elemento tabla y los encabezados
         const table = document.createElement("table");
@@ -124,16 +135,12 @@ async function getJokes() {
                 const contentCell = document.createElement("td");
                 contentCell.textContent = jokeData.content;
                 
-
                 // Añadir las celdas a la fila
                 row.appendChild(topicCell);
                 row.appendChild(contentCell);
 
                 // Añadir la fila a la tabla
                 table.appendChild(row);
-
-                // Sumar los puntos del chiste actual
-                totalPoints += jokeData.points;
             } else {
                 console.warn(`El documento ${doc.id} no contiene el tema o el chiste.`);
             }
@@ -144,38 +151,6 @@ async function getJokes() {
         updatePointsDisplay(); // Actualiza la visualización de puntos
     } catch (error) {
         console.error("Error al obtener los chistes:", error);
-    }
-}
-
-
-// Función para agregar un chiste a Firestore, incluyendo el nombre del usuario
-
-
-async function getAllJokes() {
-    try {
-        const querySnapshot = await getDocs(collection(db, "jokes"));
-        allJokesList.innerHTML = ""; // Limpiar la lista de chistes
-
-        querySnapshot.forEach((doc) => {
-            const jokeData = doc.data();
-            const jokeDate = new Date(jokeData.timestamp.toDate()); // Convertir timestamp a Date
-            const formattedDate = jokeDate.toLocaleString(); // Formato legible
-
-            if (jokeData.content && jokeData.userName) {
-                allJokesList.innerHTML += `
-                    <div class="mb-4 border p-2 rounded">
-                        <p class="font-bold">${jokeData.userName}</p>
-                        <p>Tema: ${jokeData.topic}</p>
-                        <p>Chiste: ${jokeData.content}</p>
-                        <p class="text-gray-500 text-sm">${formattedDate}</p>
-                    </div>
-                `;
-            }
-        });
-
-        allJokesContainer.style.display = "block"; // Mostrar el contenedor
-    } catch (error) {
-        console.error("Error al obtener los chistes de otros usuarios:", error);
     }
 }
 
@@ -193,6 +168,7 @@ function displayMessage(msg) {
         messageElement.remove();
     }, 3000);
 }
+
 
 // Función para iniciar el juego
 function startGame() {
