@@ -29,24 +29,17 @@
         // Exportar auth y db para su uso en script.js
         window.auth = auth;
         window.db = db;
-
-        // Función para mostrar la información del usuario
-    
     </script>
 </head>
 <body class="bg-gray-100 font-sans">
 
-        <!-- Contenedor de inicio de sesión -->
-
-
     <div class="container mx-auto p-4">
-
         <div id="login-container" class="text-center mb-4">
             <button id="login-button" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
                 Iniciar Sesión con Google
             </button>
         </div>
-        <!-- Contenedor del juego -->
+        
         <div id="game-container" style="display: none;">
             <div id="points-display" class="text-lg text-center mb-4">Puntos Totales: 0</div>
             <div class="mb-4 text-center">
@@ -66,7 +59,6 @@
                 </button>
             </div>
             <div id="current-theme" class="text-lg text-center mb-4">Tema a desarrollar: </div>
-
             <div class="mb-4">
                 <input type="text" id="joke-input" placeholder="Escribe tu chiste aquí" class="border rounded p-2 w-full">
             </div>
@@ -78,15 +70,32 @@
         </div>
 
         <div id="joke-container" class="bg-white p-4 rounded shadow"></div>
-
     </div>
-
 
     <div id="all-jokes-container" style="display: none;">
         <div id="all-jokes-list"></div>
     </div>
-    
 
+    <!-- Menú para dispositivos móviles -->
+    <div class="fixed bottom-0 left-0 right-0 bg-white shadow-lg p-2 flex justify-around">
+        <div class="flex flex-col items-center">
+            <span>😄</span>
+            <span>Chistes</span>
+        </div>
+        <div class="flex flex-col items-center">
+            <span>👍</span>
+            <span>Favoritos</span>
+        </div>
+        <div class="flex flex-col items-center">
+            <span>📊</span>
+            <span>Estadísticas</span>
+        </div>
+        <div class="flex flex-col items-center">
+            <img id="user-avatar" src="" alt="Usuario" class="w-8 h-8 rounded-full">
+            <p id="user-display-name" class="text-md"></p> <!-- Nombre de usuario aquí -->
+        </div>
+    </div>
+    
     <script type="module" src="script.js"></script>
     <script type="module" src="vote.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
