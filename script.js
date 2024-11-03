@@ -28,7 +28,6 @@ let totalTime;
 let startTime; // Agregar la variable startTime aquí
 let isGameOver = false; // Variable de control para verificar si el juego ha terminado
 
-
 // Función para mostrar la información del usuario
 function displayUserInfo() {
     // Elimina la información de usuario existente si ya hay una
@@ -60,10 +59,14 @@ function displayUserInfo() {
         // Asegúrate de que el botón de cierre de sesión exista
         const logoutButton = document.getElementById("logout-button");
         if (logoutButton) {
+            // Mostrar el botón de cierre de sesión
+            logoutButton.classList.add('visible'); 
+
             // Agregar evento de cierre de sesión
             logoutButton.addEventListener("click", async () => {
                 await auth.signOut();
                 userInfo.remove();
+                logoutButton.classList.remove('visible'); // Ocultar botón de cierre de sesión
                 gameContainer.style.display = "none"; // Ocultar contenedor del juego
                 loginContainer.style.display = "block"; // Mostrar botón de inicio de sesión
                 points = 0; // Reinicia los puntos
@@ -77,9 +80,6 @@ function displayUserInfo() {
         }
     }
 }
-
-// Asegúrate de que displayUserInfo se llame después de que se haya cargado el DOM
-document.addEventListener("DOMContentLoaded", displayUserInfo);
 
 
 

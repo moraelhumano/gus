@@ -97,3 +97,18 @@ body {
     text-decoration: none;
     cursor: pointer;
 }
+
+
+
+#logout-button {
+    color: white; /* Texto en blanco */
+    border: none; /* Sin borde */
+    padding: 10px 20px; /* Relleno del botón */
+    border-radius: 5px; /* Bordes redondeados */
+    cursor: pointer; /* Cambia el cursor al pasar el ratón */
+    display: none; /* Oculta el botón inicialmente */
+}
+
+#logout-button.visible {
+    display: block; /* Muestra el botón cuando se agrega la clase 'visible' */
+}

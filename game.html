@@ -86,12 +86,15 @@
     <div class="container mx-auto">
         <!-- Barra de navegación con el logo y el botón de tema -->
         <div class="bg-red-600 p-4 flex justify-between items-center">
-            <img src="gus-logo.png" class="w-20" alt="">
             <div class="flex items-center">
                 <button id="theme-toggle" class="text-white text-2xl cursor-pointer">
                     ☀️
                 </button>
             </div>
+            <img src="gus-logo.png" class="w-20" alt="">
+            <button id="logout-button" class="hidden w-20">🚪</button>
+
+
         </div>
 
         <div id="login-container" class="text-center py-4">
@@ -99,6 +102,7 @@
                 Iniciar Sesión con Google
             </button>
         </div>
+        
         
         <div id="game-container" class="mt-10 px-4" style="display: none;">
             <div id="points-display" class="text-lg text-center px-4 hidden"></div>
@@ -110,8 +114,6 @@
                     <option value="hard">Mesa de la Logia (30 segundos)</option>
                 </select>
             </div>
-
-            <button id="install-button" style="display: none;">Agregar a la pantalla de inicio</button>
 
 
             <div id="timer" class="mb-4">
@@ -133,6 +135,13 @@
 
         <div id="joke-container" class="bg-white p-4 rounded shadow"></div>
     </div>
+
+
+
+
+    <button id="install-button" style="display: none;">Agregar a la pantalla de inicio</button>
+
+
 
     <script type="module" src="script.js"></script>
     <script type="module" src="vote.js"></script>
