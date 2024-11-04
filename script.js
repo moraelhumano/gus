@@ -109,7 +109,6 @@ async function deleteJoke(jokeId) {
     }
 }
 
-
 async function getJokes() {
     try {
         const q = query(collection(db, "jokes"), where("userId", "==", currentUser.uid));
@@ -117,6 +116,10 @@ async function getJokes() {
         
         jokeContainer.innerHTML = ""; // Limpia el contenedor de chistes
         let totalPoints = 0;
+
+        // Crear el elemento de encabezado para mostrar los puntos totales
+        const totalPointsDisplay = document.createElement("h3");
+        totalPointsDisplay.classList.add("total-points-display"); // Agregar estilos adicionales si es necesario
 
         // Crear el elemento tabla y los encabezados
         const table = document.createElement("table");
@@ -147,6 +150,9 @@ async function getJokes() {
                 const contentCell = document.createElement("td");
                 contentCell.textContent = jokeData.content;
 
+                // Sumar los puntos de cada chiste al total
+                totalPoints += jokeData.points;
+
                 // Crear la celda de acción con el botón de eliminar
                 const actionCell = document.createElement("td");
                 const deleteButton = document.createElement("button");
@@ -172,6 +178,10 @@ async function getJokes() {
                 console.warn(`El documento ${doc.id} no contiene el tema o el chiste.`);
             }
         });
+
+        // Actualizar la visualización del total de puntos
+        totalPointsDisplay.textContent = `Total de puntos: ${totalPoints}`;
+        jokeContainer.appendChild(totalPointsDisplay); // Agregar el total de puntos antes de la tabla
 
         jokeContainer.appendChild(table);
         points = totalPoints;

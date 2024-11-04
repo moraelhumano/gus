@@ -112,3 +112,8 @@ body {
 #logout-button.visible {
     display: block; /* Muestra el botón cuando se agrega la clase 'visible' */
 }
+
+.total-points-display {
+    color: black;
+    font-weight: bold;
+}
