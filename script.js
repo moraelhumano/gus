@@ -1,5 +1,5 @@
 // script.js
-import { getAuth, GoogleAuthProvider, signInWithPopup, deleteUser } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-auth.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-auth.js";
 import { getFirestore, collection, getDocs, addDoc, query, where, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-firestore.js";
 import { themes } from  "/words.js";
 
@@ -42,6 +42,8 @@ function displayUserInfo() {
         userInfo.id = "user-info"; 
         userInfo.innerHTML = `
             <img src="gus-logo.png" alt="Foto de perfil" class="h-10" />
+            <button id="logout-button" class="hidden">Cerrar Sesión</button>
+
         `;
 
         // Inserta el contenedor de usuario antes del contenedor de inicio de sesión
