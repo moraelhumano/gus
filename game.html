@@ -55,16 +55,16 @@
                 body.classList.add("bg-gray-900", "text-white");
                 difficultySelect.classList.add("text-black"); // Cambiar texto a negro en el modo oscuro
                 jokeInput.classList.add("text-black"); // Cambiar texto del input a negro en modo oscuro
-                themeButton.textContent = "🌙"; // Modo oscuro
+                themeButton.textContent = "☀️"; // Modo oscuro
             } else {
-                themeButton.textContent = "☀️"; // Modo claro
+                themeButton.textContent = "🌙"; // Modo claro
             }
 
             themeButton.addEventListener("click", () => {
                 body.classList.toggle("bg-gray-900");
                 body.classList.toggle("text-white");
                 const isDarkMode = body.classList.contains("bg-gray-900");
-                themeButton.textContent = isDarkMode ? "🌙" : "☀️"; // Cambia el emoji según el modo
+                themeButton.textContent = isDarkMode ? "☀️" : "🌙"; // Cambia el emoji según el modo
 
                 // Cambiar el color del texto del select y del input según el modo
                 if (isDarkMode) {
