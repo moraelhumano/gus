@@ -100,7 +100,6 @@ async function loginWithGoogle() {
 async function deleteJoke(jokeId) {
     try {
         await deleteDoc(doc(db, "jokes", jokeId)); // Elimina el documento del Firestore
-        console.log(`Chiste con ID ${jokeId} eliminado correctamente.`);
         displayMessage("Chiste eliminado con éxito."); // Muestra un mensaje de éxito
     } catch (error) {
         console.error("Error al eliminar el chiste:", error);
@@ -196,7 +195,6 @@ if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('/service-worker.js')
             .then(registration => {
-                console.log('Service Worker registrado con éxito:', registration);
             })
             .catch(error => {
                 console.error('Error al registrar el Service Worker:', error);
@@ -242,6 +240,8 @@ toggleTableButton.addEventListener("click", () => {
 
 // Al cargar chistes, asegúrate de que la tabla esté oculta
 jokeContainer.style.display = "none"; // Inicialmente oculta el contenedor de chistes
+
+
 
 
 // Función para actualizar la visualización de puntos
@@ -454,6 +454,45 @@ window.addEventListener("beforeinstallprompt", (e) => {
 });
 
 
+// Oculta el botón "Mostrar Chistes" inicialmente
+toggleTableButton.style.display = "none";
+
+// Verificar el estado de autenticación al cargar la aplicación
+auth.onAuthStateChanged((user) => {
+    if (user) {
+        currentUser = user;
+
+        // Ocultar el botón de inicio de sesión y mostrar el contenedor del juego
+        loginContainer.style.display = "none";
+        gameContainer.style.display = "block";
+
+        // Muestra el botón "Mostrar Chistes" solo cuando el usuario está autenticado
+        toggleTableButton.style.display = "block";
+
+        // Cargar chistes
+        getJokes();
+
+        // Mostrar información del usuario
+        const userInfo = {
+            name: user.displayName,
+            photoURL: user.photoURL,
+            // Agrega cualquier otro campo que necesites
+        };
+        displayUserInfo(userInfo);
+
+    } else {
+        // Resetear variables y UI al cerrar sesión
+        currentUser = null;
+        loginContainer.style.display = "block";
+        gameContainer.style.display = "none";
+        jokeContainer.innerHTML = ""; // Limpiar los chistes
+        points = 0; // Reiniciar los puntos
+        updatePointsDisplay();
+        document.getElementById("current-theme").innerText = "Por 2 puntos escribe sobre: "; // Limpiar el tema en el DOM
+        toggleTableButton.style.display = "none"; // Oculta el botón "Mostrar Chistes" si no está autenticado
+        console.log("Usuario no autenticado.");
+    }
+});
 
 
 // Eventos
