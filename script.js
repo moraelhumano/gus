@@ -74,7 +74,6 @@ function displayUserInfo() {
                 points = 0; // Reinicia los puntos
                 updatePointsDisplay();
                 jokeContainer.innerHTML = ""; // Limpiar chistes al cerrar sesión
-                currentJokeTheme = ''; // Limpiar el tema actual
                 document.getElementById("current-theme").innerText = "Por 2 puntos escribe sobre: "; // Limpiar el tema en el DOM
             });
         } else {
@@ -283,7 +282,7 @@ function startTimer() {
             clearInterval(timer);
             if (!isGameOver) {
                 // Cambiar el mensaje de tema para 1 punto
-                document.getElementById("current-theme").innerText = "Por 1 punto escribe sobre: ";
+                document.getElementById("current-theme").innerText = `Por 1 punto escribe sobre: ${currentJokeTheme}`;
 
                 points += 1; // Solo se sumará 1 punto
                 updatePointsDisplay();
