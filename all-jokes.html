@@ -74,7 +74,7 @@
 <p class="text-gray-500">
   Estado de favorito: 
   <span class="${jokeData.isFavorite ? 'text-yellow-500' : 'text-gray-500'}">
-    ${jokeData.isFavorite ? 'Favorito' : 'No es favorito'}
+    ${jokeData.isFavorite ? 'marcado' : 'No es favorito'}
   </span>
 </p>
                   `;
@@ -103,11 +103,13 @@
             jokeDiv.classList.add("p-2", "border-b");
 
             jokeDiv.innerHTML = `
-                <strong>${jokeData.userName} (${jokeData.topic}):</strong>
-                <p>${jokeData.content}</p>
-                <p class="text-gray-600">Dificultad: ${jokeData.difficulty}</p> <!-- Mostrar dificultad -->
-                <p class="text-gray-500">Fue enviado en ${jokeData.timeSpent} segundos</p> <!-- Mostrar fecha -->
-            `;
+    <strong>${jokeData.userName} (${jokeData.topic}):</strong>
+    <p>${jokeData.content}</p>
+    <p class="text-gray-600">Dificultad: ${jokeData.difficulty}</p> <!-- Mostrar dificultad -->
+    <p class="text-gray-500">Fue enviado en ${jokeData.timeSpent} segundos</p> <!-- Mostrar duración -->
+    <p class="text-gray-500">Estado de favorito: ${jokeData.favorite ? "⭐" : "☆"}</p> <!-- Mostrar estado de favorito -->
+    <p class="text-gray-500">Enviado el: ${new Date(jokeData.timestamp.seconds * 1000).toLocaleString()}</p> <!-- Mostrar la fecha de envío -->
+`;
 
             jokesContainer.appendChild(jokeDiv);
         });

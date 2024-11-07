@@ -1,103 +1,108 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chistes Favoritos</title>
-
-  <!-- Agrega los scripts de Firebase con type="module" -->
-  <script type="module">
-    // Configuración de Firebase (asegúrate de reemplazar estos valores con los de tu proyecto)
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-    import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
-
-    const firebaseConfig = {
-        apiKey: "AIzaSyDgFJNyUL2AxT6YatY84E1udDkMSz9DGGs",
-        authDomain: "risapp-37bd9.firebaseapp.com",
-        projectId: "risapp-37bd9",
-        storageBucket: "risapp-37bd9.appspot.com",
-        messagingSenderId: "909578481013",
-        appId: "1:909578481013:web:541567a62b2c71f019773c",
-        measurementId: "G-46EQJBZQ3T"
-    };
-
-    // Inicializa Firebase
-    const app = initializeApp(firebaseConfig);
-    const firestore = getFirestore(app);
-
-    // Formato de fecha
-    function formatTimestamp(timestamp) {
-      const date = new Date(timestamp.seconds * 1000);
-      return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
-    }
-
-
-    
-    // Función para obtener y mostrar chistes favoritos
-    async function getFavoriteJokes() {
-      const jokesRef = collection(firestore, "jokes");
-      const q = query(jokesRef, where("isFavorite", "==", true));
-
-      try {
-        const querySnapshot = await getDocs(q);
-        const favoriteJokes = [];
-
-        querySnapshot.forEach((doc) => {
-          const jokeData = doc.data();
-          favoriteJokes.push(jokeData);
-        });
-
-        // Llamamos a la función que renderiza los chistes
-        renderFavoriteJokes(favoriteJokes);
-      } catch (error) {
-        console.error("Error al obtener los chistes favoritos:", error);
-      }
-    }
-
-    // Función para renderizar los chistes favoritos
-    function renderFavoriteJokes(jokes) {
-      const jokesContainer = document.getElementById("favorite-jokes-container");
-      jokesContainer.innerHTML = ''; // Limpiamos el contenedor antes de agregar los nuevos chistes
-
-      jokes.forEach((joke) => {
-        const jokeElement = document.createElement("div");
-        jokeElement.classList.add("joke");
-
-        jokeElement.innerHTML = `
-          <p class="text-gray-500">Enviado el: ${formatTimestamp(joke.timestamp)}</p>
-          <p class="text-gray-500">
-            Estado de favorito: 
-            <span class="${joke.isFavorite ? 'text-yellow-500' : 'text-gray-500'}">
-              ${joke.isFavorite ? 'Favorito' : 'No es favorito'}
-            </span>
-          </p>
-          <p>${joke.content}</p>
-        `;
-
-        jokesContainer.appendChild(jokeElement);
-      });
-    }
-
-    // Cuando la página cargue, obtendremos los chistes favoritos
-    window.onload = () => {
-      getFavoriteJokes();
-    };
-  </script>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Chistes - G.U.S</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
+<body class="bg-gray-100 font-sans">
+    <div class="container mx-auto">
+        <h1 class="text-2xl text-center font-bold my-4">Comunidad</h1>
+        <div id="jokes-container" class="bg-white p-4 rounded shadow"></div>
+    </div>
 
-  <h1>Chistes Favoritos</h1>
 
-  <div id="login-container">
-    <!-- contenido del contenedor de inicio de sesión -->
-</div>
-
-  <!-- Contenedor donde se mostrarán los chistes -->
-  <div id="favorite-jokes-container">
-    <!-- Aquí se cargarán los chistes favoritos -->
-  </div>
-
-  <script type="module" src="script.js"></script>
+    <!DOCTYPE html>
+    <html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Mis Chistes - G.U.S</title>
+        <link rel="stylesheet" href="style.css">
+        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    </head>
+    <body class="bg-gray-100 font-sans">
+      
+    
+        <script type="module">
+            import { initializeApp } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-app.js";
+            import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-auth.js"; 
+            import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-firestore.js";
+            
+            const firebaseConfig = {
+                apiKey: "AIzaSyDgFJNyUL2AxT6YatY84E1udDkMSz9DGGs",
+                authDomain: "risapp-37bd9.firebaseapp.com",
+                projectId: "risapp-37bd9",
+                storageBucket: "risapp-37bd9.appspot.com",
+                messagingSenderId: "909578481013",
+                appId: "1:909578481013:web:541567a62b2c71f019773c",
+                measurementId: "G-46EQJBZQ3T"
+            };
+            
+            // Inicializar Firebase
+            const app = initializeApp(firebaseConfig);
+            const db = getFirestore(app);
+            const auth = getAuth(app); 
+            
+            // Función para formatear la fecha
+            function formatTimestamp(timestamp) {
+                const date = new Date(timestamp.seconds * 1000); // Convertir a milisegundos
+                return date.toLocaleString("es-MX", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    second: "2-digit",
+                });
+            }
+            
+            // Obtén el ID del usuario actual
+            onAuthStateChanged(auth, user => {
+              if (user) {
+                const userId = user.uid; 
+            
+                // Accede a la colección de chistes y filtra por userId y favorite == true
+                const q = query(collection(db, "jokes"), where("userId", "==", userId), where("favorite", "==", true)); 
+                getDocs(q)
+                  .then(snapshot => {
+                    // Verifica si hay resultados
+                    console.log("Consulta Firebase: ", snapshot.size, "chistes favoritos encontrados");
+                    
+                    const jokesContainer = document.getElementById("jokes-container");
+                    jokesContainer.innerHTML = ""; // Limpiar el contenedor antes de agregar los chistes
+                    
+                    snapshot.forEach(doc => {
+                      const jokeData = doc.data();
+                      const jokeDiv = document.createElement("div");
+                      jokeDiv.classList.add("p-2", "border-b");
+    
+                      jokeDiv.innerHTML = `
+                          <strong>${jokeData.userName} (${jokeData.topic}):</strong>
+                          <p>${jokeData.content}</p>
+                          <p class="text-gray-600">Dificultad: ${jokeData.difficulty}</p> <!-- Mostrar dificultad -->
+                          <p class="text-gray-500">Enviado el: ${formatTimestamp(jokeData.timestamp)}</p> <!-- Mostrar fecha -->
+                          <p class="text-gray-500">Estado de favorito: 
+                            <span class="text-yellow-500">⭐ Marcado como favorito</span>
+                          </p>
+                      `;
+    
+                      jokesContainer.appendChild(jokeDiv);
+                    });
+                  })
+                  .catch(error => {
+                    console.error("Error al obtener los chistes: ", error);
+                  });
+              } else {
+                console.log("No hay usuario autenticado");
+              }
+            });
+        </script>
+    </body>
+    </html>
+    
+    
 </body>
 </html>
