@@ -6,13 +6,16 @@
     <title>GUS</title>
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="favicon-16x16.png" sizes="16x16" type="image/png">
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <meta name="theme-color" content="#dc2626">
 
     <script type="module">
         // Importación de Firebase
+        
+
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-app.js";
+        import { getMessaging, getToken, onMessage } from 'https://www.gstatic.com/firebasejs/10.3.1/firebase-messaging.js';
+
         import { getAuth } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-auth.js";
         import { getFirestore } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-firestore.js";
 
@@ -35,10 +38,18 @@
             measurementId: "G-46EQJBZQ3T"
         };
 
+
+    
+
         // Inicializar Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
+
+            // Inicializar Firebase
+
+// Inicializar el servicio de mensajería después de la inicialización de Firebase
+const messaging = getMessaging(app);
 
         // Exportar auth y db para su uso en otros scripts
         window.auth = auth;
@@ -81,6 +92,34 @@
                 localStorage.setItem("darkMode", isDarkMode);
             });
         });
+
+
+// Manejo de notificaciones en primer plano
+onMessage(messaging, (payload) => {
+    console.log('Notificación recibida en primer plano:', payload);
+    // Personaliza el despliegue de la notificación
+    const { title, body } = payload.notification;
+    new Notification(title, { body });
+});
+
+
+
+
+
+            messaging.getToken({ vapidKey: 'BHsf56viOIcnDAyNAGFmmH7_imkprzoJC8puoDVBi3jxeqyw4S1NT5DGkBx6qnYSRDU9ocj' })
+    .then((currentToken) => {
+        if (currentToken) {
+            console.log('Token de dispositivo:', currentToken);
+        } else {
+            console.log('No hay token disponible.');
+        }
+    })
+    .catch((err) => {
+        console.log('Error al obtener el token:', err);
+    });
+
+            
+
     </script>
 </head>
 <body class="bg-gray-100 font-sans">

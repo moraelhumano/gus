@@ -1,4 +1,5 @@
 // script.js
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.3.1/firebase-app.js';
 import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-auth.js";
 import { getFirestore, collection, getDocs, addDoc, query, where, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-firestore.js";
 import { themes } from  "/words.js";
@@ -17,6 +18,9 @@ const gameContainer = document.getElementById("game-container");
 const loginContainer = document.getElementById("login-container");
 const timerBar = document.getElementById("timer-bar");
 const difficultySelect = document.getElementById("difficulty-select");
+
+
+
 
 
 
@@ -493,6 +497,31 @@ auth.onAuthStateChanged((user) => {
         console.log("Usuario no autenticado.");
     }
 });
+
+
+
+const functions = require('firebase-functions');
+const admin = require('firebase-admin');
+admin.initializeApp();
+
+exports.sendScheduledNotification = functions.pubsub.schedule('20 23 * * *').onRun((context) => {
+  const message = {
+    notification: {
+      title: '¡Es hora de escribir un chiste!',
+      body: '¡Recuerda que la comedia nunca duerme! 😄',
+    },
+    topic: 'comedians', // O el token de un usuario específico
+  };
+
+  return admin.messaging().send(message)
+    .then((response) => {
+      console.log('Notificación programada enviada con éxito:', response);
+    })
+    .catch((error) => {
+      console.error('Error al enviar la notificación:', error);
+    });
+});
+
 
 
 // Eventos
