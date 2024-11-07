@@ -13,6 +13,9 @@
         <div id="jokes-container" class="bg-white p-4 rounded shadow"></div>
     </div>
 
+    <script type="module" src="script.js"></script>
+
+
     <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-auth.js"; 
@@ -66,7 +69,15 @@
                   <p>${jokeData.content}</p>
                   <p class="text-gray-600">Dificultad: ${jokeData.difficulty}</p> <!-- Mostrar dificultad -->
                   <p class="text-gray-500">Enviado el: ${formatTimestamp(jokeData.timestamp)}</p> <!-- Mostrar fecha -->
-              `;
+
+<p class="text-gray-500">Enviado el: ${formatTimestamp(jokeData.timestamp)}</p> <!-- Mostrar fecha -->
+<p class="text-gray-500">
+  Estado de favorito: 
+  <span class="${jokeData.isFavorite ? 'text-yellow-500' : 'text-gray-500'}">
+    ${jokeData.isFavorite ? 'Favorito' : 'No es favorito'}
+  </span>
+</p>
+                  `;
 
               jokesContainer.appendChild(jokeDiv);
             });
@@ -105,5 +116,6 @@
     loadJokes(); // Cargar los chistes al iniciar la página
 
     </script>
+    
 </body>
 </html>

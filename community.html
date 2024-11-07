@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chistes Favoritos</title>
+
+  <!-- Agrega los scripts de Firebase con type="module" -->
+  <script type="module">
+    // Configuración de Firebase (asegúrate de reemplazar estos valores con los de tu proyecto)
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+    import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDgFJNyUL2AxT6YatY84E1udDkMSz9DGGs",
+        authDomain: "risapp-37bd9.firebaseapp.com",
+        projectId: "risapp-37bd9",
+        storageBucket: "risapp-37bd9.appspot.com",
+        messagingSenderId: "909578481013",
+        appId: "1:909578481013:web:541567a62b2c71f019773c",
+        measurementId: "G-46EQJBZQ3T"
+    };
+
+    // Inicializa Firebase
+    const app = initializeApp(firebaseConfig);
+    const firestore = getFirestore(app);
+
+    // Formato de fecha
+    function formatTimestamp(timestamp) {
+      const date = new Date(timestamp.seconds * 1000);
+      return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+    }
+
+
+    
+    // Función para obtener y mostrar chistes favoritos
+    async function getFavoriteJokes() {
+      const jokesRef = collection(firestore, "jokes");
+      const q = query(jokesRef, where("isFavorite", "==", true));
+
+      try {
+        const querySnapshot = await getDocs(q);
+        const favoriteJokes = [];
+
+        querySnapshot.forEach((doc) => {
+          const jokeData = doc.data();
+          favoriteJokes.push(jokeData);
+        });
+
+        // Llamamos a la función que renderiza los chistes
+        renderFavoriteJokes(favoriteJokes);
+      } catch (error) {
+        console.error("Error al obtener los chistes favoritos:", error);
+      }
+    }
+
+    // Función para renderizar los chistes favoritos
+    function renderFavoriteJokes(jokes) {
+      const jokesContainer = document.getElementById("favorite-jokes-container");
+      jokesContainer.innerHTML = ''; // Limpiamos el contenedor antes de agregar los nuevos chistes
+
+      jokes.forEach((joke) => {
+        const jokeElement = document.createElement("div");
+        jokeElement.classList.add("joke");
+
+        jokeElement.innerHTML = `
+          <p class="text-gray-500">Enviado el: ${formatTimestamp(joke.timestamp)}</p>
+          <p class="text-gray-500">
+            Estado de favorito: 
+            <span class="${joke.isFavorite ? 'text-yellow-500' : 'text-gray-500'}">
+              ${joke.isFavorite ? 'Favorito' : 'No es favorito'}
+            </span>
+          </p>
+          <p>${joke.content}</p>
+        `;
+
+        jokesContainer.appendChild(jokeElement);
+      });
+    }
+
+    // Cuando la página cargue, obtendremos los chistes favoritos
+    window.onload = () => {
+      getFavoriteJokes();
+    };
+  </script>
+
+</head>
+<body>
+
+  <h1>Chistes Favoritos</h1>
+
+  <div id="login-container">
+    <!-- contenido del contenedor de inicio de sesión -->
+</div>
+
+  <!-- Contenedor donde se mostrarán los chistes -->
+  <div id="favorite-jokes-container">
+    <!-- Aquí se cargarán los chistes favoritos -->
+  </div>
+
+  <script type="module" src="script.js"></script>
+</body>
+</html>
