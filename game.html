@@ -105,18 +105,20 @@ onMessage(messaging, (payload) => {
 
 
 
+        // Asegúrate de que el código Firebase de notificaciones esté después de la inicialización
+        messaging.getToken({ vapidKey: 'BHsf56viOIcnDAyNAGFmmH7_imkprzoJC8puoDVBi3jxeqyw4S1NT5DGkBx6qnYSRDU9ocj' })
+            .then((currentToken) => {
+                if (currentToken) {
+                    console.log('Token de dispositivo:', currentToken);
+                    // Aquí puedes enviar el token al servidor si lo necesitas
+                } else {
+                    console.log('No hay token disponible.');
+                }
+            })
+            .catch((err) => {
+                console.log('Error al obtener el token:', err);
+            });
 
-            messaging.getToken({ vapidKey: 'BHsf56viOIcnDAyNAGFmmH7_imkprzoJC8puoDVBi3jxeqyw4S1NT5DGkBx6qnYSRDU9ocj' })
-    .then((currentToken) => {
-        if (currentToken) {
-            console.log('Token de dispositivo:', currentToken);
-        } else {
-            console.log('No hay token disponible.');
-        }
-    })
-    .catch((err) => {
-        console.log('Error al obtener el token:', err);
-    });
 
             
 

@@ -500,28 +500,6 @@ auth.onAuthStateChanged((user) => {
 
 
 
-const functions = require('firebase-functions');
-const admin = require('firebase-admin');
-admin.initializeApp();
-
-exports.sendScheduledNotification = functions.pubsub.schedule('20 23 * * *').onRun((context) => {
-  const message = {
-    notification: {
-      title: '¡Es hora de escribir un chiste!',
-      body: '¡Recuerda que la comedia nunca duerme! 😄',
-    },
-    topic: 'comedians', // O el token de un usuario específico
-  };
-
-  return admin.messaging().send(message)
-    .then((response) => {
-      console.log('Notificación programada enviada con éxito:', response);
-    })
-    .catch((error) => {
-      console.error('Error al enviar la notificación:', error);
-    });
-});
-
 
 
 // Eventos
