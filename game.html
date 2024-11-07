@@ -10,6 +10,69 @@
     <meta name="theme-color" content="#dc2626">
 
     <script type="module">
+        document.addEventListener("DOMContentLoaded", () => {
+            const themeButton = document.getElementById("theme-toggle");
+            const body = document.body;
+
+            // Cargar el estado del modo oscuro desde localStorage
+            const isDarkMode = localStorage.getItem("darkMode") === "true";
+            if (isDarkMode) {
+                body.classList.add("dark");
+                themeButton.textContent = "☀️";
+            } else {
+                themeButton.textContent = "🌙";
+            }
+
+            themeButton.addEventListener("click", () => {
+                body.classList.toggle("dark");
+                const isDarkMode = body.classList.contains("dark");
+                themeButton.textContent = isDarkMode ? "☀️" : "🌙";
+                localStorage.setItem("darkMode", isDarkMode);
+            });
+        });
+    </script>
+
+    <!-- Estilos adicionales en CSS para el modo oscuro -->
+    <style>
+        /* Modo claro (por defecto) */
+        body {
+            background-color: #f3f4f6; /* bg-gray-100 */
+            color: #1f2937; /* text-gray-900 */
+        }
+
+        /* Modo oscuro */
+        body.dark {
+            background-color: #1f2937; /* bg-gray-900 */
+            color: #f9fafb; /* text-white */
+        }
+
+        /* Ejemplo para select y input en modo oscuro */
+        body.dark #difficulty-select,
+        body.dark #joke-input {
+            background-color: #374151; /* fondo oscuro para inputs */
+            color: #f9fafb; /* texto claro */
+        }
+
+        #joke-container{
+            color: #fff;
+            background-color: #374151; /* fondo oscuro para inputs */
+
+        }
+
+        #joke-container{
+            color: #fff;
+            background-color: #374151; /* fondo oscuro para inputs */
+
+        }
+
+        #joke-table{
+            color: #fff;
+            background-color: #374151; /* fondo oscuro para inputs */
+
+        }
+    </style>
+
+    <script type="module">
         // Importación de Firebase
         
 
@@ -81,9 +144,12 @@ const messaging = getMessaging(app);
 
                 // Cambiar el color del texto del select y del input según el modo
                 if (isDarkMode) {
+                    console.log("Obscuro")
                     difficultySelect.classList.add("text-black");
                     jokeInput.classList.add("text-black"); // Aplicar texto negro al input en modo oscuro
                 } else {
+                    console.log("Claro")
+
                     difficultySelect.classList.remove("text-black");
                     jokeInput.classList.remove("text-black"); // Remover texto negro al input en modo claro
                 }

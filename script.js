@@ -183,6 +183,8 @@ async function getJokes() {
 
         // Actualizar la visualización del total de puntos
         totalPointsDisplay.textContent = `Total de puntos: ${totalPoints}`;
+        totalPointsDisplay.style.color = 'white'; // Esto cambia el color del texto a blanco
+
         jokeContainer.appendChild(totalPointsDisplay); // Agregar el total de puntos antes de la tabla
 
         jokeContainer.appendChild(table);
