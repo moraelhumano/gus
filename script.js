@@ -20,10 +20,6 @@ const timerBar = document.getElementById("timer-bar");
 const difficultySelect = document.getElementById("difficulty-select");
 
 
-
-
-
-
 let currentUser = null;
 let points = 0;
 let currentJokeTheme = '';
@@ -32,7 +28,12 @@ let totalTime;
 let startTime; // Agregar la variable startTime aquí
 let isGameOver = false; // Variable de control para verificar si el juego ha terminado
 
+
+
+
+
 // Función para mostrar la información del usuario
+
 function displayUserInfo() {
     // Elimina la información de usuario existente si ya hay una
     const existingUserInfo = document.getElementById("user-info");
@@ -95,7 +96,7 @@ async function loginWithGoogle() {
         const result = await signInWithPopup(auth, provider);
         currentUser = result.user;
         // Redirige a game.html
-        window.location.href = "game.html"; // Cambia el enlace si es necesario
+        window.location.href = "main.html"; // Cambia el enlace si es necesario
     } catch (error) {
         console.error("Error al iniciar sesión con Google:", error);
     }
@@ -225,8 +226,33 @@ toggleTableButton.classList.add("bg-blue-500", "text-white", "px-4", "py-2", "ro
 // Añadir el selector y el botón al contenedor
 controlContainer.appendChild(toggleTableButton); // Añadir el botón al lado
 
-// Colocar el contenedor de control antes del contenedor de la tabla
-jokeContainer.insertAdjacentElement('beforebegin', controlContainer); // Inserta el contenedor de control antes del contenedor de la tabla
+// Verificar si jokeContainer existe antes de intentar modificar su visibilidad
+if (jokeContainer && jokeContainer.style.display !== "none") {
+    jokeContainer.style.display = "none"; // Inicialmente oculta el contenedor de chistes
+    console.info("El contenedor de chistes ha sido ocultado.");
+} else {
+    console.warn("jokeContainer no está presente o ya está oculto.");
+    // Opcional: Lógica alternativa si jokeContainer no existe o ya está oculto
+}
+
+// Verificar si jokeInput existe y no está oculto antes de modificar su visibilidad
+if (jokeInput && jokeInput.style.display !== "none") {
+    jokeInput.style.display = "none"; // Ocultar el input
+    console.info("El input de chistes ha sido ocultado.");
+} else {
+    console.warn("jokeInput no está presente o ya está oculto.");
+    // Opcional: Lógica alternativa si jokeInput no existe o ya está oculto
+}
+
+// Verificar si submitJokeButton existe y no está oculto antes de modificar su visibilidad
+if (submitJokeButton && submitJokeButton.style.display !== "none") {
+    submitJokeButton.style.display = "none"; // Ocultar el botón de enviar inicialmente
+    console.info("El botón de enviar ha sido ocultado.");
+} else {
+    console.warn("submitJokeButton no está presente o ya está oculto.");
+    // Opcional: Lógica alternativa si submitJokeButton no existe o ya está oculto
+}
+
 
 // Inicializa la tabla oculta
 let isTableVisible = false;
@@ -241,10 +267,6 @@ toggleTableButton.addEventListener("click", () => {
         toggleTableButton.textContent = "Mostrar Chistes"; // Cambia el texto del botón
     }
 });
-
-// Al cargar chistes, asegúrate de que la tabla esté oculta
-jokeContainer.style.display = "none"; // Inicialmente oculta el contenedor de chistes
-
 
 
 
@@ -265,8 +287,6 @@ function displayMessage(msg) {
 
 
 // Al iniciar, oculta el input y el botón de enviar
-jokeInput.style.display = "none"; // Ocultar el input inicialmente
-submitJokeButton.style.display = "none"; // Ocultar el botón de enviar inicialmente
 
 // Función para iniciar el temporizador
 function startTimer() {

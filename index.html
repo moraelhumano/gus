@@ -1,123 +1,161 @@
+
+
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GUS</title>
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#dc2626">
+    <link rel="stylesheet" href="style.css">
     <link rel="icon" href="favicon-16x16.png" sizes="16x16" type="image/png">
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-        }
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <meta name="theme-color" content="#dc2626">
 
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            background-color: #f3f4f6;
-            color: #333;
-            overflow: hidden;
-            transition: background-color 0.3s ease-in-out;
-        }
-
-        .container {
-            text-align: center;
-            padding: 20px;
-            animation: fadeIn 1s ease-in-out;
-        }
-
-        h1 {
-            font-size: 3rem;
-            font-weight: bold;
-            color: #1f2937;
-            margin-bottom: 1rem;
-            animation: slideDown 0.7s ease-out;
-        }
-
-        p {
-            font-size: 1.2rem;
-            line-height: 1.6;
-            color: #4b5563;
-            animation: fadeInText 1.2s ease-out;
-            margin-bottom: 2rem;
-        }
-
-        /* Botón */
-        .game-button {
-            display: inline-block;
-            padding: 12px 24px;
-            font-size: 1rem;
-            color: #fff;
-            background-color: #1f2937;
-            border: none;
-            border-radius: 8px;
-            text-decoration: none;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            animation: fadeInButton 1.5s ease-out;
-        }
-
-        .game-button:hover {
-            background-color: #4b5563;
-        }
-
-        /* Animaciones */
-        @keyframes fadeIn {
-            0% { opacity: 0; }
-            100% { opacity: 1; }
-        }
-
-        @keyframes slideDown {
-            0% { transform: translateY(-30px); opacity: 0; }
-            100% { transform: translateY(0); opacity: 1; }
-        }
-
-        @keyframes fadeInText {
-            0% { opacity: 0; transform: translateY(20px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes fadeInButton {
-            0% { opacity: 0; transform: translateY(10px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
-
-    </style>
-
-
-</head>
-<body style="background-color: #e51b23;">
-
-    <div class="flex flex-col items-center">
-        <img src="gus-logo.png" class="w-1/2" alt="">
-        <p class="text-white text-center px-8">Soy el asistente que te ayudará a mejorar tus prácticas y habilidades en la escritura de tus nuevos chistes.</p>
-        <a href="game.html" class="game-button w-40 text-center mt-4">Ir al Juego</a>
+    <script type="module">
+        // Importación de Firebase
         
+
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-app.js";
+        import { getMessaging, getToken, onMessage } from 'https://www.gstatic.com/firebasejs/10.3.1/firebase-messaging.js';
+
+        import { getAuth } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-auth.js";
+        import { getFirestore } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-firestore.js";
+
+
+
+        if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("/service-worker.js")
+        .then(() => console.log("Service Worker registrado"))
+        .catch((error) => console.log("Error al registrar el Service Worker:", error));
+}
+
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDgFJNyUL2AxT6YatY84E1udDkMSz9DGGs",
+            authDomain: "risapp-37bd9.firebaseapp.com",
+            projectId: "risapp-37bd9",
+            storageBucket: "risapp-37bd9.appspot.com",
+            messagingSenderId: "909578481013",
+            appId: "1:909578481013:web:541567a62b2c71f019773c",
+            measurementId: "G-46EQJBZQ3T"
+        };
+
+
+        // Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+
+        // Inicializar el servicio de mensajería después de la inicialización de Firebase
+        const messaging = getMessaging(app);
+
+        // Exportar auth y db para su uso en otros scripts
+        window.auth = auth;
+        window.db = db;
+
+        // Función para alternar el modo oscuro
+        document.addEventListener("DOMContentLoaded", () => {
+            const themeButton = document.getElementById("theme-toggle");
+            const body = document.body;
+            const difficultySelect = document.getElementById("difficulty-select");
+            const jokeInput = document.getElementById("joke-input"); // Obtener el input del chiste
+
+            // Comprobar el estado del modo oscuro en el almacenamiento local
+            const isDarkMode = localStorage.getItem("darkMode") === "true";
+            if (isDarkMode) {
+                body.classList.add("bg-gray-900", "text-white");
+                difficultySelect.classList.add("text-black"); // Cambiar texto a negro en el modo oscuro
+                jokeInput.classList.add("text-black"); // Cambiar texto del input a negro en modo oscuro
+                themeButton.textContent = "☀️"; // Modo oscuro
+            } else {
+                themeButton.textContent = "🌙"; // Modo claro
+            }
+
+            themeButton.addEventListener("click", () => {
+                body.classList.toggle("bg-gray-900");
+                body.classList.toggle("text-white");
+                const isDarkMode = body.classList.contains("bg-gray-900");
+                themeButton.textContent = isDarkMode ? "☀️" : "🌙"; // Cambia el emoji según el modo
+
+                // Cambiar el color del texto del select y del input según el modo
+                if (isDarkMode) {
+                    difficultySelect.classList.add("text-black");
+                    jokeInput.classList.add("text-black"); // Aplicar texto negro al input en modo oscuro
+                } else {
+                    difficultySelect.classList.remove("text-black");
+                    jokeInput.classList.remove("text-black"); // Remover texto negro al input en modo claro
+                }
+
+                // Guardar el estado en el almacenamiento local
+                localStorage.setItem("darkMode", isDarkMode);
+            });
+        });
+
+
+// Manejo de notificaciones en primer plano
+onMessage(messaging, (payload) => {
+    console.log('Notificación recibida en primer plano:', payload);
+    // Personaliza el despliegue de la notificación
+    const { title, body } = payload.notification;
+    new Notification(title, { body });
+});
+
+
+
+
+        // Asegúrate de que el código Firebase de notificaciones esté después de la inicialización
+        messaging.getToken({ vapidKey: 'BHsf56viOIcnDAyNAGFmmH7_imkprzoJC8puoDVBi3jxeqyw4S1NT5DGkBx6qnYSRDU9ocj' })
+            .then((currentToken) => {
+                if (currentToken) {
+                    console.log('Token de dispositivo:', currentToken);
+                    // Aquí puedes enviar el token al servidor si lo necesitas
+                } else {
+                    console.log('No hay token disponible.');
+                }
+            })
+            .catch((err) => {
+                console.log('Error al obtener el token:', err);
+            });
+
+
+            
+
+    </script>
+</head>
+<body class="bg-gray-100 font-sans">
+
+    <div class="container mx-auto">
+        <!-- Barra de navegación con el logo y el botón de tema -->
+      
+
+        </div>
+
+   
+        <div class="flex flex-col items-center">
+            <img src="gus-logo.png" class="w-1/2" alt="">
+            <p class="text-white text-center px-8">Soy el asistente que te ayudará a mejorar tus prácticas y habilidades en la escritura de tus nuevos chistes.</p>
+            <div id="login-container" class="text-center py-4">
+                <button id="login-button" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                    Iniciar Sesión con Google
+                </button>
+            </div>
+            </div>
+    
+        
+
     </div>
 
-    <p class="text-white mt-20">Por <a href="https://www.instagram.com/moraseleccionador/" class="underline">@moraseleccionador</a> y ChatGPT</p>
 
 
 
-    <!-- Agrega este botón en tu HTML de inicio (index.html) -->
-<!-- <script src="script.js"></script> -->
-<script src="auth.js" type="module"></script>
-<script src="firestore.js" type="module"></script>
-<script src="gameLogic.js" type="module"></script>
-<script src="ui.js" type="module"></script>
-<script src="pwa.js" type="module"></script>
-<script src="words.js"></script>
-<script type="module" src="jokesManager.js"></script>
-<script src="https://cdn.tailwindcss.com"></script>
+    <button id="install-button" style="display: none;">Agregar a la pantalla de inicio</button>
 
 
+
+    <script type="module" src="script.js"></script>
+    <script type="module" src="vote.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
 </body>
 </html>

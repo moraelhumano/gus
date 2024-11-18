@@ -55,44 +55,31 @@ const messaging = getMessaging(app);
         window.auth = auth;
         window.db = db;
 
-        // Función para alternar el modo oscuro
         document.addEventListener("DOMContentLoaded", () => {
-            const themeButton = document.getElementById("theme-toggle");
-            const body = document.body;
-            const difficultySelect = document.getElementById("difficulty-select");
-            const jokeInput = document.getElementById("joke-input"); // Obtener el input del chiste
+        const themeButton = document.getElementById("theme-toggle");
+        const body = document.body;
 
-            // Comprobar el estado del modo oscuro en el almacenamiento local
-            const isDarkMode = localStorage.getItem("darkMode") === "true";
-            if (isDarkMode) {
-                body.classList.add("bg-gray-900", "text-white");
-                difficultySelect.classList.add("text-black"); // Cambiar texto a negro en el modo oscuro
-                jokeInput.classList.add("text-black"); // Cambiar texto del input a negro en modo oscuro
-                themeButton.textContent = "☀️"; // Modo oscuro
-            } else {
-                themeButton.textContent = "🌙"; // Modo claro
-            }
+        // Leer estado inicial desde localStorage
+        const isDarkMode = localStorage.getItem("darkMode") === "true";
+        if (isDarkMode) {
+            body.classList.add("bg-gray-900", "text-white");
+            themeButton.textContent = "☀️"; // Sol para modo oscuro
+        } else {
+            themeButton.textContent = "🌙"; // Luna para modo claro
+        }
 
-            themeButton.addEventListener("click", () => {
-                body.classList.toggle("bg-gray-900");
-                body.classList.toggle("text-white");
-                const isDarkMode = body.classList.contains("bg-gray-900");
-                themeButton.textContent = isDarkMode ? "☀️" : "🌙"; // Cambia el emoji según el modo
+        // Añadir evento de clic para alternar modo
+        themeButton.addEventListener("click", () => {
+            const isNowDarkMode = body.classList.toggle("bg-gray-900");
+            body.classList.toggle("text-white");
 
-                // Cambiar el color del texto del select y del input según el modo
-                if (isDarkMode) {
-                    difficultySelect.classList.add("text-black");
-                    jokeInput.classList.add("text-black"); // Aplicar texto negro al input en modo oscuro
-                } else {
-                    difficultySelect.classList.remove("text-black");
-                    jokeInput.classList.remove("text-black"); // Remover texto negro al input en modo claro
-                }
+            // Cambiar el texto del botón
+            themeButton.textContent = isNowDarkMode ? "☀️" : "🌙";
 
-                // Guardar el estado en el almacenamiento local
-                localStorage.setItem("darkMode", isDarkMode);
-            });
+            // Guardar estado en localStorage
+            localStorage.setItem("darkMode", isNowDarkMode);
         });
-
+    });
 
 // Manejo de notificaciones en primer plano
 onMessage(messaging, (payload) => {
@@ -165,7 +152,7 @@ onMessage(messaging, (payload) => {
             <div id="timer" class="mb-4">
                 <div id="timer-bar" class="bg-green-500 h-6 rounded" style="width: 100%;"></div>
             </div>
-            <div id="current-theme" class="font-semibold text-xl">Por 2 puntos escribe sobre:</div>
+            <div id="current-theme" class="font-semibold text-xl">Por 2 puntos escribe sobre2:</div>
             <div class="mb-4 mt-2">
                 <input type="text" id="joke-input" placeholder="Escribe tu chiste aquí" class="border rounded p-2 w-full">
             </div>
@@ -179,7 +166,7 @@ onMessage(messaging, (payload) => {
             </div>
         </div>
 
-        <div id="joke-container" class="bg-white  rounded shadow"></div>
+        <div id="joke-container" class="bg-white p-4 rounded shadow"></div>
     </div>
 
 
