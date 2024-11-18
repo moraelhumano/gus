@@ -25,12 +25,15 @@ body {
     transition: width 1s linear; /* Animación suave */
 }
 
+.joke-container{
+    color: #000 !important;
+}
 
 .jokes-table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
-    color:#fff;
+    color:#000;
 }
 
 .jokes-table th, .jokes-table td {
@@ -118,3 +121,24 @@ body {
     color: black;
     font-weight: bold;
 }
+
+
+
+#temas-lista {
+    margin: 20px;
+  }
+  .tema-item {
+    cursor: pointer;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+  }
+  .tema-item:hover {
+    background-color: #f0f0f0;
+  }
+  #tema-detalle {
+    margin: 20px;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+  }
+  
