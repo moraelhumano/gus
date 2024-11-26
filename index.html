@@ -11,149 +11,70 @@
     <link rel="icon" href="favicon-16x16.png" sizes="16x16" type="image/png">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <meta name="theme-color" content="#dc2626">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
 
-    <script type="module">
-        // Importación de Firebase
-        
-
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-app.js";
-        import { getMessaging, getToken, onMessage } from 'https://www.gstatic.com/firebasejs/10.3.1/firebase-messaging.js';
-
-        import { getAuth } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-auth.js";
-        import { getFirestore } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-firestore.js";
-
-
-
-        if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("/service-worker.js")
-        .then(() => console.log("Service Worker registrado"))
-        .catch((error) => console.log("Error al registrar el Service Worker:", error));
-}
-
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyDgFJNyUL2AxT6YatY84E1udDkMSz9DGGs",
-            authDomain: "risapp-37bd9.firebaseapp.com",
-            projectId: "risapp-37bd9",
-            storageBucket: "risapp-37bd9.appspot.com",
-            messagingSenderId: "909578481013",
-            appId: "1:909578481013:web:541567a62b2c71f019773c",
-            measurementId: "G-46EQJBZQ3T"
-        };
-
-
-        // Inicializar Firebase
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-
-        // Inicializar el servicio de mensajería después de la inicialización de Firebase
-        const messaging = getMessaging(app);
-
-        // Exportar auth y db para su uso en otros scripts
-        window.auth = auth;
-        window.db = db;
-
-        // Función para alternar el modo oscuro
-        document.addEventListener("DOMContentLoaded", () => {
-            const themeButton = document.getElementById("theme-toggle");
-            const body = document.body;
-            const difficultySelect = document.getElementById("difficulty-select");
-            const jokeInput = document.getElementById("joke-input"); // Obtener el input del chiste
-
-            // Comprobar el estado del modo oscuro en el almacenamiento local
-            const isDarkMode = localStorage.getItem("darkMode") === "true";
-            if (isDarkMode) {
-                body.classList.add("bg-gray-900", "text-white");
-                difficultySelect.classList.add("text-black"); // Cambiar texto a negro en el modo oscuro
-                jokeInput.classList.add("text-black"); // Cambiar texto del input a negro en modo oscuro
-                themeButton.textContent = "☀️"; // Modo oscuro
-            } else {
-                themeButton.textContent = "🌙"; // Modo claro
-            }
-
-            themeButton.addEventListener("click", () => {
-                body.classList.toggle("bg-gray-900");
-                body.classList.toggle("text-white");
-                const isDarkMode = body.classList.contains("bg-gray-900");
-                themeButton.textContent = isDarkMode ? "☀️" : "🌙"; // Cambia el emoji según el modo
-
-                // Cambiar el color del texto del select y del input según el modo
-                if (isDarkMode) {
-                    difficultySelect.classList.add("text-black");
-                    jokeInput.classList.add("text-black"); // Aplicar texto negro al input en modo oscuro
-                } else {
-                    difficultySelect.classList.remove("text-black");
-                    jokeInput.classList.remove("text-black"); // Remover texto negro al input en modo claro
-                }
-
-                // Guardar el estado en el almacenamiento local
-                localStorage.setItem("darkMode", isDarkMode);
-            });
-        });
-
-
-// Manejo de notificaciones en primer plano
-onMessage(messaging, (payload) => {
-    console.log('Notificación recibida en primer plano:', payload);
-    // Personaliza el despliegue de la notificación
-    const { title, body } = payload.notification;
-    new Notification(title, { body });
-});
-
-
-
-
-        // Asegúrate de que el código Firebase de notificaciones esté después de la inicialización
-        messaging.getToken({ vapidKey: 'BHsf56viOIcnDAyNAGFmmH7_imkprzoJC8puoDVBi3jxeqyw4S1NT5DGkBx6qnYSRDU9ocj' })
-            .then((currentToken) => {
-                if (currentToken) {
-                    console.log('Token de dispositivo:', currentToken);
-                    // Aquí puedes enviar el token al servidor si lo necesitas
-                } else {
-                    console.log('No hay token disponible.');
-                }
-            })
-            .catch((err) => {
-                console.log('Error al obtener el token:', err);
-            });
-
-
-            
-
-    </script>
 </head>
-<body class="bg-gray-100 font-sans">
-
-    <div class="container mx-auto">
-        <!-- Barra de navegación con el logo y el botón de tema -->
-      
-
+<body class="bg-primary-red padding-top-25vh">
+    <div class="flex flex-col items-center  pb-52">
+        <img src="gus-logo.png" class="w-1/2" alt="">
+        <h1 class="text-white text-2xl">Crea tu primer rutina de Standup</h1>
+        <div id="login-container" class="w-full text-center py-4">
+            <button id="login-button" class="w-1/2 mt-10 bg-primary-purple text-white font-semibold py-3 px-6 rounded-lg hover:bg-secondary-purple shadow-lg shadow-purple transition duration-300">
+                Iniciar Sesión con Google
+            </button>
         </div>
-
-   
-        <div class="flex flex-col items-center">
-            <img src="gus-logo.png" class="w-1/2" alt="">
-            <p class="text-white text-center px-8">Soy el asistente que te ayudará a mejorar tus prácticas y habilidades en la escritura de tus nuevos chistes.</p>
-            <div id="login-container" class="text-center py-4">
-                <button id="login-button" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-                    Iniciar Sesión con Google
-                </button>
-            </div>
-            </div>
-    
-        
-
     </div>
 
+    <section id="desafio-30-dias">
+        <!-- Texto de la sección -->
+        <div class="w-full bg-gray-50 flex justify-between items-center">
+            <div class="w-6/12 mx-24 text-left">
+                <h2 class="text-4xl font-bold text-gray-800 mb-6">¡Crea tu rutina de stand-up en <b>30 días</b>!</h2>
+                <p class="text-xl text-gray-600 mb-8">Desafíate a ti mismo y empieza a escribir comedia desde el <b>primer día</b>.</p>        
+                <!-- Botón de llamada a la acción -->
+                <div>
+                    <a href="#registro" class="bg-red-600 text-white py-3 px-8 text-lg rounded-lg hover:bg-red-700 transition duration-300">
+                        Conoce la comunidad
+                    </a>
+                </div>
+            </div>
+            <!-- Imagen de la mascota -->
+            <div class="w-6/12">
+                <img src="gus-mascota.png" alt="Mascota de la app" class="w-full h-auto object-contain">
+            </div>
+        </div>
 
 
-
-    <button id="install-button" style="display: none;">Agregar a la pantalla de inicio</button>
-
-
-
+        <div class="w-full bg-gray-50 flex justify-between items-center">
+            <!-- Imagen de la mascota -->
+            <div class="w-6/12">
+                <img src="gus-mascota.png" alt="Mascota de la app" class="w-full h-auto object-contain">
+            </div>
+            <div class="w-6/12 mx-24 text-left">
+                <h2 class="text-4xl font-bold text-gray-800 mb-6">Aprende a escribir tus propios chistes</h2>
+                <p class="text-xl text-gray-600 mb-8">Sigue la metodología de <b>GUS</b> para conocer cómo funciona la comedia</p>                            
+            </div>
+        </div>
+    </section>
+              
+    <footer class="bg-primary-red text-white py-8">
+        <div class="flex flex-col items-center">
+          <!-- Información de la app -->
+          <img class="w-20" src="gus-logo.png" alt="logo app" class="">
+          <!-- Enlaces -->
+          <!-- <div class="flex flex-col sm:flex-row items-center mb-6 sm:mb-0">
+            <a href="#sobre-nosotros" class="text-white text-lg hover:text-gray-400 mx-3 mb-2 sm:mb-0">Sobre Nosotros</a>
+            <a href="#contacto" class="text-white text-lg hover:text-gray-400 mx-3 mb-2 sm:mb-0">Contacto</a>
+            <a href="#privacidad" class="text-white text-lg hover:text-gray-400 mx-3 mb-2 sm:mb-0">Política de Privacidad</a>
+          </div> -->
+        </div>
+      
+        <!-- Copyright -->
+        <div class="text-center text-gray-400">
+          <p class="text-white">&copy; 2024 G.U.S. Todos los derechos reservados.</p>
+        </div>
+      </footer>
+      
     <script type="module" src="script.js"></script>
     <script type="module" src="vote.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>

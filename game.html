@@ -8,112 +8,10 @@
     <link rel="icon" href="favicon-16x16.png" sizes="16x16" type="image/png">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <meta name="theme-color" content="#dc2626">
-
-    <script type="module">
-        // Importación de Firebase
-        
-
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-app.js";
-        import { getMessaging, getToken, onMessage } from 'https://www.gstatic.com/firebasejs/10.3.1/firebase-messaging.js';
-
-        import { getAuth } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-auth.js";
-        import { getFirestore } from "https://www.gstatic.com/firebasejs/9.18.0/firebase-firestore.js";
-
-
-
-        if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("/service-worker.js")
-        .then(() => console.log("Service Worker registrado"))
-        .catch((error) => console.log("Error al registrar el Service Worker:", error));
-}
-
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyDgFJNyUL2AxT6YatY84E1udDkMSz9DGGs",
-            authDomain: "risapp-37bd9.firebaseapp.com",
-            projectId: "risapp-37bd9",
-            storageBucket: "risapp-37bd9.appspot.com",
-            messagingSenderId: "909578481013",
-            appId: "1:909578481013:web:541567a62b2c71f019773c",
-            measurementId: "G-46EQJBZQ3T"
-        };
-
-
-    
-
-        // Inicializar Firebase
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-            // Inicializar Firebase
-
-// Inicializar el servicio de mensajería después de la inicialización de Firebase
-const messaging = getMessaging(app);
-
-        // Exportar auth y db para su uso en otros scripts
-        window.auth = auth;
-        window.db = db;
-
-        document.addEventListener("DOMContentLoaded", () => {
-        const themeButton = document.getElementById("theme-toggle");
-        const body = document.body;
-
-        // Leer estado inicial desde localStorage
-        const isDarkMode = localStorage.getItem("darkMode") === "true";
-        if (isDarkMode) {
-            body.classList.add("bg-gray-900", "text-white");
-            themeButton.textContent = "☀️"; // Sol para modo oscuro
-        } else {
-            themeButton.textContent = "🌙"; // Luna para modo claro
-        }
-
-        // Añadir evento de clic para alternar modo
-        themeButton.addEventListener("click", () => {
-            const isNowDarkMode = body.classList.toggle("bg-gray-900");
-            body.classList.toggle("text-white");
-
-            // Cambiar el texto del botón
-            themeButton.textContent = isNowDarkMode ? "☀️" : "🌙";
-
-            // Guardar estado en localStorage
-            localStorage.setItem("darkMode", isNowDarkMode);
-        });
-    });
-
-// Manejo de notificaciones en primer plano
-onMessage(messaging, (payload) => {
-    console.log('Notificación recibida en primer plano:', payload);
-    // Personaliza el despliegue de la notificación
-    const { title, body } = payload.notification;
-    new Notification(title, { body });
-});
-
-
-
-
-        // Asegúrate de que el código Firebase de notificaciones esté después de la inicialización
-        messaging.getToken({ vapidKey: 'BHsf56viOIcnDAyNAGFmmH7_imkprzoJC8puoDVBi3jxeqyw4S1NT5DGkBx6qnYSRDU9ocj' })
-            .then((currentToken) => {
-                if (currentToken) {
-                    console.log('Token de dispositivo:', currentToken);
-                    // Aquí puedes enviar el token al servidor si lo necesitas
-                } else {
-                    console.log('No hay token disponible.');
-                }
-            })
-            .catch((err) => {
-                console.log('Error al obtener el token:', err);
-            });
-
-
-            
-
-    </script>
 </head>
 <body class="bg-gray-100 font-sans">
 
-    <div class="container mx-auto">
+    <div class="">
         <!-- Barra de navegación con el logo y el botón de tema -->
         <div class="bg-red-600 p-4 flex justify-between items-center">
             <div class="flex items-center">
@@ -121,13 +19,13 @@ onMessage(messaging, (payload) => {
                     ☀️
                 </button>
             </div>
-            <img src="gus-logo.png" class="w-20" alt="">
-            <button id="logout-button" class="hidden w-20">
+            <a href="main.html">
+                <img src="gus-logo.png" class="w-20" alt="">
+            </a>
+            <button id="logout-button" class=" w-20">
                 <span>🚪</span>
                 <span>Salir</span>
             </button>
-
-
         </div>
 
         <div id="login-container" class="text-center py-4">
@@ -135,7 +33,6 @@ onMessage(messaging, (payload) => {
                 Iniciar Sesión con Google
             </button>
         </div>
-        
         
         <div id="game-container" class="mt-10 px-4" style="display: none;">
             <div id="points-display" class="text-lg text-center px-4 hidden"></div>
@@ -152,21 +49,25 @@ onMessage(messaging, (payload) => {
             <div id="timer" class="mb-4">
                 <div id="timer-bar" class="bg-green-500 h-6 rounded" style="width: 100%;"></div>
             </div>
-            <div id="current-theme" class="font-semibold text-xl">Por 2 puntos escribe sobre2:</div>
+            <div id="current-theme" class="font-semibold text-xl">Por 2 puntos escribe sobre:</div>
             <div class="mb-4 mt-2">
                 <input type="text" id="joke-input" placeholder="Escribe tu chiste aquí" class="border rounded p-2 w-full">
             </div>
             <div class="flex justify-around mb-4">
                 <button id="start-button" class="bg-cyan-500 text-white px-4 py-2 rounded">
-                    Iniciar
+                    COMENZAR
                 </button>
                 <button id="submit-joke-button" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
                     Enviar Chiste
                 </button>
             </div>
         </div>
-
-        <div id="joke-container" class="bg-white p-4 rounded shadow"></div>
+        <div class="flex justify-center items-center mt-8">
+            <button id="toggle-table-button" class="bg-primary-purple text-white px-6 py-3 rounded hover:bg-purple-700" style="display: none;">
+                VER MIS CHISTES
+            </button>
+        </div>
+        <div id="joke-container" class="bg-white p-4 rounded shadow mt-10"></div>
     </div>
 
 

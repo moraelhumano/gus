@@ -1,24 +1,48 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aula</title>
-    <link rel="stylesheet" type="text/css" href="style.css">
+    <title>GUS</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="favicon-16x16.png" sizes="16x16" type="image/png">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <meta name="theme-color" content="#dc2626">
 </head>
-<body>
-    <h1>Aula - Topics</h1>
-    <div id="topics-container">
-        <!-- Aquí se cargarán los topics y subtopics -->
+<body class="bg-gray-100 font-sans">
+
+    <div class="">
+        <!-- Barra de navegación con el logo y el botón de tema -->
+        <div class="bg-red-600 p-4 flex justify-between items-center">
+            <div class="flex items-center">
+                <button id="theme-toggle" class="text-white text-2xl cursor-pointer">
+                    ☀️
+                </button>
+            </div>
+            <a href="main.html">
+                <img src="gus-logo.png" class="w-20" alt="">
+            </a>
+            <button id="logout-button" class=" w-20">
+                <span>🚪</span>
+                <span>Salir</span>
+            </button>
+        </div>
+
+
+
+        <table id="topics-table" class="min-w-full border-collapse border border-gray-300">
+            <!-- El contenido de la tabla será generado dinámicamente -->
+        </table>
+        
+        <div id="game-container" class="mt-10 px-4" style="display: none;">
+
+
+    
     </div>
+
+
     <script type="module" src="script.js"></script>
-<!-- 
-        <script src="auth.js" type="module"></script>
-<script src="firestore.js" type="module"></script>
-<script src="gameLogic.js" type="module"></script>
-<script src="ui.js" type="module"></script>
-<script src="pwa.js" type="module"></script>
-<script src="words.js"></script>
-       -->
-    </script>
+    <script type="module" src="vote.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</body>
 </html>

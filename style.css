@@ -9,6 +9,19 @@ body {
 
 }
 
+
+.bg-primary-red{
+    background-color: #e61b23;
+}
+
+.bg-primary-purple{
+    background-color: #4f43ae;
+}
+
+.bg-secondary-purple{
+    background-color: #b5b6e4;
+}
+
 .progress-container {
     width: 100%;
     height: 20px;
@@ -110,12 +123,8 @@ body {
     padding: 10px 20px; /* Relleno del botón */
     border-radius: 5px; /* Bordes redondeados */
     cursor: pointer; /* Cambia el cursor al pasar el ratón */
-    display: none; /* Oculta el botón inicialmente */
 }
 
-#logout-button.visible {
-    display: block; /* Muestra el botón cuando se agrega la clase 'visible' */
-}
 
 .total-points-display {
     color: black;
@@ -142,3 +151,52 @@ body {
     border-radius: 8px;
   }
   
+
+
+  .padding-top-25vh{
+    padding-top: 25vh;
+  }
+
+  .margin-top-25vh{
+    margin-top: 25vh;
+  }
+
+  .margin-top-10vh{
+    margin-top: 10vh;
+  }
+
+
+  /* styles.css */
+
+#topics-container {
+    margin: 20px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+.topic {
+    margin-bottom: 15px;
+    padding: 10px;
+    background-color: #ffffff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.topic h2 {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.topic ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.topic li {
+    margin-bottom: 5px;
+    color: #555;
+}

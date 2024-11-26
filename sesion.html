@@ -9,7 +9,8 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <meta name="theme-color" content="#dc2626">
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-100 font-sans">
+
     <div class="">
         <!-- Barra de navegación con el logo y el botón de tema -->
         <div class="bg-red-600 p-4 flex justify-between items-center">
@@ -26,25 +27,16 @@
                 <span>Salir</span>
             </button>
         </div>
+<h1>Esta es la pantalla donde se ven las diferentes sesiones</h1>
+<h1>Información de la Sesión</h1>
 
-
-        <!-- Menú principal: Aula y Ejercicios -->
-        <div id="main-menu" style="display: none;">
-            <header class="text-center py-4">
-                <h1 class="text-3xl font-bold text-red-600">Plataforma Interactiva</h1>
-            </header>
-            <div id="menu" class="flex justify-center space-x-4">
-                <a href="aula.html"><button id="aula-button" class="bg-primary-purple text-white px-6 py-3 rounded hover:bg-green-600">Aula</button></a>
-                <a href="game.html"><button id="ejercicios-button" class="bg-secondary-purple text-white px-6 py-3 rounded hover:bg-yellow-600">Ejercicios</button></a>
-            </div>
-        </div>
+        <table id="topics-table" class="min-w-full border-collapse border border-gray-300">
+            <!-- Contenido generado dinámicamente -->
+        </table>
         
-        <div id="game-container" class="mt-10 px-4" style="display: none !important;">
 
-
-        <div id="joke-container" class="bg-white p-4 rounded shadow"></div>
+    
     </div>
-
 
 
     <script type="module" src="script.js"></script>
